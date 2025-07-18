@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 sm:flex-row">
         {/* Credit */}
         <p className="text-center text-sm text-muted-foreground">
-          © {year} Boxed — Minimal Inventory Tracker. Made with{" "}
+          © {year} Boxed - Minimal Inventory Tracker. Made with{" "}
           <span className="text-red-500">♥</span> by{" "}
           <Link
             href="https://sonnguyenhoang.com"
@@ -16,7 +16,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className="underline-offset-2 hover:text-primary hover:underline transition"
           >
-            Son Nguyen
+            Son Nguyen
           </Link>
           .
         </p>

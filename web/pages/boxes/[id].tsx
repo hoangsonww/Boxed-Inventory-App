@@ -3,11 +3,13 @@
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+
 import { toast } from "sonner";
 
 import { getBox, updateBox } from "@/supabase/queries/boxes";
 import { getItemsByBox, createItem } from "@/supabase/queries/items";
-import type { Box, Item } from "@/supabase/types";
+import type { Box, Item, ItemType } from "@/supabase/types";
+import { getItemTypes } from "@/supabase/queries/itemTypes";
 
 import {
   Card,
@@ -20,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ItemCard from "@/components/ItemCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import {
   PlusCircle,
   Image as ImageIcon,
@@ -34,6 +37,13 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import CollaboratorsSection from "@/components/CollaboratorsSection";
+import AddItemCard from "@/components/AddItemCard";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 /* dnd-kit */
 import {
@@ -209,8 +219,9 @@ function EditableText({
 interface SortableItemProps {
   id: string;
   item: Item;
+  type?: ItemType;
 }
-function SortableItem({ id, item }: SortableItemProps) {
+function SortableItem({ id, item, type }: SortableItemProps) {
   const {
     attributes,
     listeners,
@@ -239,8 +250,8 @@ function SortableItem({ id, item }: SortableItemProps) {
           <GripVertical className="h-4 w-4" />
         </button>
 
-        {/* actual card UI */}
-        <ItemCard item={item} dragging={isDragging} />
+        {/* @ts-ignore */}
+        <ItemCard item={item} dragging={isDragging} type={type} />
       </div>
     </div>
   );
@@ -249,17 +260,17 @@ function SortableItem({ id, item }: SortableItemProps) {
 /*──────────────────────────────────────────────────────────
   Box Hero (photo + meta) – looks like a box
 ──────────────────────────────────────────────────────────*/
-function BoxHero({
-  box,
-  isOwner,
-  onUploadClick,
-  onRemovePhoto,
-  onTogglePacked,
-  onRename,
-  onRelocate,
-  totalItems,
-  totalQty,
-}: {
+export function BoxHero({
+                          box,
+                          isOwner,
+                          onUploadClick,
+                          onRemovePhoto,
+                          onTogglePacked,
+                          onRename,
+                          onRelocate,
+                          totalItems,
+                          totalQty,
+                        }: {
   box: Box;
   isOwner: boolean;
   onUploadClick: () => void;
@@ -286,22 +297,26 @@ function BoxHero({
                 (e.currentTarget as HTMLImageElement).dataset.loaded = "true";
               }}
             />
-            {/* Dark gradient footer for text legibility */}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent" />
           </div>
         ) : (
           <div className="box-cardboard-bg relative flex h-52 w-full flex-col items-center justify-center gap-2 text-muted-foreground">
             <Archive className="h-8 w-8" />
             <span>No box photo</span>
+
             {isOwner && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onUploadClick}
-                type="button"
-              >
-                <Camera className="mr-1 h-4 w-4" /> Add photo
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild className="z-10">
+                  <Button variant="outline" size="sm">
+                    <Camera className="mr-1 h-4 w-4" /> Add photo
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="bottom" align="center" sideOffset={4}>
+                  <DropdownMenuItem onClick={onUploadClick}>
+                    Add photo...
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
         )}
@@ -369,15 +384,22 @@ function BoxHero({
                   <Camera className="mr-1 h-4 w-4" />
                   Change
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Remove photo"
-                  onClick={onRemovePhoto}
-                  type="button"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Remove photo"
+                      onClick={onRemovePhoto}
+                      type="button"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    Remove photo
+                  </TooltipContent>
+                </Tooltip>
               </>
             )}
           </div>
@@ -408,6 +430,36 @@ export default function BoxDetailPage() {
   const [qty, setQty] = useState(1);
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [types, setTypes] = useState<ItemType[]>([]);
+
+  const [searchOpen, setSearchOpen] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredOrder, setFilteredOrder] = useState<string[]>([]);
+  const debounceRef = useRef<number>(0);
+
+  useEffect(() => {
+    setFilteredOrder(order);
+  }, [order]);
+
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = window.setTimeout(() => {
+      const q = searchQuery.trim().toLowerCase();
+      if (!q) {
+        setFilteredOrder(order);
+      } else {
+        setFilteredOrder(
+          order.filter((id) =>
+            items
+              .find((i) => i.id === id)!
+              .name.toLowerCase()
+              .includes(q),
+          ),
+        );
+      }
+    }, 300);
+    return () => clearTimeout(debounceRef.current);
+  }, [searchQuery, order, items]);
 
   /* box photo hidden input */
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -434,6 +486,20 @@ export default function BoxDetailPage() {
     if (!boxId) return;
     void loadAll(boxId);
   }, [boxId]);
+
+  // load box + items
+  useEffect(() => {
+    if (!boxId) return;
+    (async () => {
+      const b = await getBox(boxId);
+      setBox(b);
+    })();
+  }, [boxId]);
+
+  // load all types once
+  useEffect(() => {
+    getItemTypes().then(setTypes).catch(console.error);
+  }, []);
 
   /* counts */
   const { totalItems, totalQty } = useMemo(() => {
@@ -568,20 +634,75 @@ export default function BoxDetailPage() {
     void uploadBoxPhoto(f);
   };
 
+  const typeById = useMemo(
+    () =>
+      types.reduce<Record<number, ItemType>>((acc, t) => {
+        acc[t.id] = t;
+        return acc;
+      }, {}),
+    [types],
+  );
+
   /* drag handlers */
   const handleDragStart = (_e: DragStartEvent) => {
     // nothing; we could set activeId if we want styling
   };
+
+  const LOCALSTORAGE_KEY = `box-order-${boxId}`;
+
+  useEffect(() => {
+    if (!boxId) return;
+
+    (async () => {
+      setLoading(true);
+
+      // 1) fetch box
+      const b = await getBox(boxId);
+      setBox(b);
+
+      // 2) fetch items
+      const its = await getItemsByBox(boxId);
+
+      // 3) restore saved order
+      const key = `box-order-${boxId}`;
+      let ids = its.map((i) => i.id);
+      if (typeof window !== "undefined") {
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          try {
+            const arr: string[] = JSON.parse(saved);
+            // keep only ids still in the list, then append any new ones
+            const kept = arr.filter((id) => ids.includes(id));
+            const added = ids.filter((id) => !kept.includes(id));
+            ids = [...kept, ...added];
+          } catch {
+            // ignore malformed JSON
+          }
+        }
+      }
+
+      // 4) update state
+      setItems(its);
+      setOrder(ids);
+      setLoading(false);
+    })();
+  }, [boxId]);
+
+  // 2. Handle drag end and persist:
   const handleDragEnd = (e: DragEndEvent) => {
     const { active, over } = e;
     if (!over || active.id === over.id) return;
+
     const oldIdx = order.indexOf(active.id as string);
     const newIdx = order.indexOf(over.id as string);
     if (oldIdx === -1 || newIdx === -1) return;
+
     const newOrder = arrayMove(order, oldIdx, newIdx);
     setOrder(newOrder);
     setItems(newOrder.map((id) => items.find((i) => i.id === id)!));
-    // TODO persist sort_index if needed
+
+    // persist to localStorage
+    localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(newOrder));
   };
 
   /* loading skeleton */
@@ -604,11 +725,10 @@ export default function BoxDetailPage() {
       {/* Hidden file input for box photo */}
       {isOwner && (
         <input
-          ref={fileInputRef}
-          id="box-photo-input"
           type="file"
           accept="image/*"
-          className="hidden"
+          ref={fileInputRef}
+          className="sr-only"
           onChange={handleBoxPhotoInput}
         />
       )}
@@ -617,10 +737,7 @@ export default function BoxDetailPage() {
       <BoxHero
         box={box}
         isOwner={!!isOwner}
-        onUploadClick={() => {
-          if (!isOwner) return;
-          fileInputRef.current?.click();
-        }}
+        onUploadClick={() => fileInputRef.current?.click()}
         onRemovePhoto={removeBoxPhoto}
         onTogglePacked={togglePacked}
         onRename={renameBox}
@@ -629,87 +746,89 @@ export default function BoxDetailPage() {
         totalQty={totalQty}
       />
 
-      {/* Add item (collapsible) */}
-      {isOwner && (
-        <Card className="mx-auto max-w-lg transition-shadow hover:shadow-lg">
-          <CardHeader
-            className="flex cursor-pointer flex-row items-center justify-between space-y-0"
-            onClick={() => setAddOpen((o) => !o)}
-          >
-            <CardTitle className="text-base font-medium">
-              {addOpen ? "Add Item" : "Add Item"}
-            </CardTitle>
-            {addOpen ? (
-              <ChevronUp className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-            )}
-          </CardHeader>
-          {addOpen && (
-            <>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                  <Input
-                    placeholder="Item name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="sm:col-span-2"
-                  />
-                  <Input
-                    type="number"
-                    min={1}
-                    value={qty}
-                    onChange={(e) => setQty(+e.target.value)}
-                    placeholder="Qty"
-                  />
-                </div>
-                <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground">
-                  <ImageIcon className="text-primary" />
-                  {file ? file.name : "Upload photo (optional)"}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  />
-                </label>
-              </CardContent>
-              <CardFooter className="justify-end">
-                <Button disabled={uploading || !name.trim()} onClick={addItem}>
-                  {uploading ? (
-                    "Uploading…"
-                  ) : (
-                    <>
-                      <PlusCircle className="mr-1 h-4 w-4" /> Add
-                    </>
-                  )}
-                </Button>
-              </CardFooter>
-            </>
-          )}
-        </Card>
-      )}
-
-      {/* Items grid — simple + stable drag */}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext items={order} strategy={rectSortingStrategy}>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {order.length ? (
-              order.map((id) => {
-                const item = items.find((i) => i.id === id)!;
-                return <SortableItem key={id} id={id} item={item} />;
-              })
-            ) : (
-              <p className="text-center text-muted-foreground">No items yet.</p>
-            )}
+      {/* side‑by‑side grid */}
+      <div className="mx-auto max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+        {isOwner && (
+          <div className="w-full">
+            <AddItemCard boxId={box.id} onItemAdded={() => loadAll(box.id)} />
           </div>
-        </SortableContext>
-      </DndContext>
+        )}
+        <div className="w-full">
+          <CollaboratorsSection boxId={box.id} />
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="border-b border-border" />
+
+      <Card className="space-y-0">
+        <CardHeader
+          className="flex items-center justify-between cursor-pointer"
+          onClick={() => setSearchOpen((o) => !o)}
+        >
+          <CardTitle className="text-base">
+            Your Items{" "}
+            {isOwner && (
+              <span className="text-sm text-muted-foreground">
+                (drag to reorder)
+              </span>
+            )}
+          </CardTitle>
+          {searchOpen ? (
+            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          )}
+        </CardHeader>
+
+        {searchOpen && (
+          <CardContent className="space-y-4">
+            {/* Search input */}
+            <div className="flex gap-2">
+              <Input
+                placeholder="Search items..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+
+            {/* Filtered grid */}
+            {filteredOrder.length > 0 ? (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={filteredOrder}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {filteredOrder.map((id) => {
+                      const item = items.find((i) => i.id === id)!;
+                      return (
+                        <SortableItem
+                          key={id}
+                          id={id}
+                          item={item}
+                          type={typeById[item.type_id!]}
+                        />
+                      );
+                    })}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            ) : (
+              <p className="text-center text-muted-foreground">
+                {searchQuery.trim()
+                  ? `No items match “${searchQuery.trim()}”.`
+                  : "No items yet."}
+              </p>
+            )}
+          </CardContent>
+        )}
+      </Card>
 
       {/* Minimal drag CSS override */}
       <style jsx global>{`

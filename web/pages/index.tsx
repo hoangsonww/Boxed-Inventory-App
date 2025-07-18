@@ -103,7 +103,7 @@ const useCases = [
   {
     icon: <MapPin size={28} />,
     h: "Self‑storage",
-    p: "Know what’s in unit B‑12.",
+    p: "Know what’s in unit B‑12.",
   },
   {
     icon: <LayoutDashboard size={28} />,
@@ -118,11 +118,11 @@ const useCases = [
 ];
 
 const techStack = [
-  { icon: <Activity size={24} />, label: "Next 15" },
+  { icon: <Activity size={24} />, label: "Next 15" },
   { icon: <BoxIcon size={24} />, label: "Supabase" },
   { icon: <QrCode size={24} />, label: "QRCode.react" },
   { icon: <ShieldCheck size={24} />, label: "Tailwind" },
-  { icon: <Layers size={24} />, label: "shadcn UI" },
+  { icon: <Layers size={24} />, label: "shadcn UI" },
 ];
 
 const testimonials = [
@@ -169,10 +169,10 @@ const faqs = [
 ];
 
 const roadmap = [
-  { q: "Q3 ’25", t: "Bulk CSV import" },
-  { q: "Q4 ’25", t: "Offline photo capture" },
-  { q: "Q1 ’26", t: "iOS & Android apps" },
-  { q: "Q2 ’26", t: "Smart suggestions (AI)" },
+  { q: "Q3 ’25", t: "Bulk CSV import" },
+  { q: "Q4 ’25", t: "Offline photo capture" },
+  { q: "Q1 ’26", t: "iOS & Android apps" },
+  { q: "Q2 ’26", t: "Smart suggestions (AI)" },
 ];
 
 /*──────────────────── page ────────────────────*/
@@ -203,9 +203,14 @@ export default function Landing() {
       </Head>
 
       <main className="flex flex-col items-center gap-28 pb-36">
-        {/*──────── Hero ────────*/}
-        <section className="relative w-full max-w-6xl overflow-hidden rounded-3xl p-[3px] animated-border">
-          <div className="relative overflow-hidden rounded-[inherit] bg-background px-6 py-32 text-center">
+        <section className="relative isolate w-full max-w-6xl overflow-hidden rounded-3xl p-[3px] animated-border">
+          {/* Animated gradient blobs */}
+          <div className="pointer-events-none absolute -top-48 -left-48 h-96 w-96 rounded-full bg-primary/30 blur-3xl animate-blob" />
+          <div className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-secondary/25 blur-3xl animate-blob delay-150" />
+          <div className="pointer-events-none absolute top-1/2 left-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/20 blur-2xl animate-blob delay-300" />
+
+          {/* Content */}
+          <div className="relative z-10 overflow-hidden rounded-[inherit] bg-background/80 px-6 py-32 text-center backdrop-blur-md">
             <h1 className="mx-auto max-w-5xl text-5xl font-extrabold leading-tight tracking-tight md:text-6xl lg:text-7xl">
               Turn&nbsp;
               <span className="text-primary">{rotatingA[idx]}</span>
@@ -213,10 +218,12 @@ export default function Landing() {
               <span className="text-primary">{rotatingB[idx]}</span>
               &nbsp;with Boxed
             </h1>
+
             <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
               Know what’s in every box, drawer or storage unit – without lifting
               a lid.
             </p>
+
             <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link href="/register">
                 <Button
@@ -280,7 +287,7 @@ export default function Landing() {
 
         {/*──────── Use‑cases ────────*/}
         <section className="w-full max-w-7xl px-4">
-          <h2 className="mb-8 text-center text-3xl font-bold">Perfect for…</h2>
+          <h2 className="mb-8 text-center text-3xl font-bold">Perfect for...</h2>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {useCases.map((c) => (
               <div
@@ -337,7 +344,7 @@ export default function Landing() {
         <section className="w-full max-w-7xl px-4">
           <h2 className="mb-6 text-center text-3xl font-bold">Pricing</h2>
           <p className="mb-10 text-center text-sm text-muted-foreground">
-            Absolutely <b>free during beta</b> – upgrades later.
+            Absolutely <b>free during beta</b> – upgrades later.
           </p>
           <div className="grid gap-8 md:grid-cols-3">
             {pricing.map((p) => (
@@ -357,7 +364,7 @@ export default function Landing() {
                   ))}
                 </ul>
                 <Button className="mt-auto w-full" disabled>
-                  Free now
+                  Free now
                 </Button>
               </div>
             ))}
@@ -483,6 +490,60 @@ export default function Landing() {
             100% {
               background-position: 0% 50%;
             }
+          }
+        `}</style>
+
+        {/* === Styles === */}
+        <style jsx>{`
+          /* rainbow border that slowly spins */
+          .animated-border::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: linear-gradient(
+              135deg,
+              var(--color-primary),
+              var(--color-accent),
+              var(--color-secondary),
+              var(--color-primary)
+            );
+            background-size: 400% 400%;
+            animation: border-spin 18s linear infinite;
+          }
+          @keyframes border-spin {
+            0% {
+              background-position: 0% 50%;
+            }
+            50% {
+              background-position: 100% 50%;
+            }
+            100% {
+              background-position: 0% 50%;
+            }
+          }
+
+          /* drifting blobs */
+          @keyframes blob {
+            0%,
+            100% {
+              transform: translate3d(0, 0, 0) scale(1);
+            }
+            33% {
+              transform: translate3d(30%, -20%, 0) scale(1.1);
+            }
+            66% {
+              transform: translate3d(-25%, 25%, 0) scale(0.9);
+            }
+          }
+          .animate-blob {
+            animation: blob 28s ease-in-out infinite;
+          }
+          .delay-150 {
+            animation-delay: 6s;
+          }
+          .delay-300 {
+            animation-delay: 12s;
           }
         `}</style>
       </main>

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: boxed-config
+data:
+  # Next.js env (only non‑secret values)
+  NEXT_PUBLIC_API_URL: "https://api.boxed.yourdomain.com"
+  NEXT_PUBLIC_GOOGLE_AI_API_KEY: ""  # leave blank, fill in Secret if needed

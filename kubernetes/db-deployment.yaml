@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: boxed-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: boxed-db
+  template:
+    metadata:
+      labels:
+        app: boxed-db
+    spec:
+      containers:
+        - name: postgres
+          image: your-repo/boxed-db:latest
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: boxed-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: boxed-secrets
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: boxed-secrets
+                  key: POSTGRES_DB
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: pgdata
+          persistentVolumeClaim:
+            claimName: pgdata-pvc

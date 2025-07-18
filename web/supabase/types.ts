@@ -3,10 +3,11 @@ import { z } from "zod";
 // ---- PROFILES ----
 export const profileSchema = z.object({
   id: z.string().uuid(),
-  username: z.string().optional(),
-  avatar_url: z.string().url().optional(),
+  username: z.string().nullable().optional(),
+  avatar_url: z.string().url().nullable().optional(),
   created_at: z.string(),
 });
+
 export type Profile = z.infer<typeof profileSchema>;
 export type NewProfile = Omit<Profile, "created_at">;
 

@@ -95,7 +95,7 @@ export default function RegisterPage() {
         </div>
 
         <Button type="submit" size="lg" disabled={loading}>
-          {loading ? "Registering…" : "Register"}
+          {loading ? "Registering..." : "Register"}
         </Button>
       </form>
 
