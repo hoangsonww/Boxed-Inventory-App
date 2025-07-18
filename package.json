@@ -1,0 +1,20 @@
+{
+  "name": "boxed-app",
+  "version": "1.0.0",
+  "description": "Boxed is an inventory tracker that helps you keep track of your items, their locations, and their quantities. It is designed to be simple and efficient, allowing you to manage your boxes/packages with ease.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "lint": "npm run check && npm run format",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,scss,md,html}\"",
+    "check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,scss,md,html}\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "prettier": "^3.6.2"
+  }
+}
