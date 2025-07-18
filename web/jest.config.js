@@ -10,9 +10,7 @@ module.exports = {
     "^.+\\.[tj]s$": "ts-jest",
   },
   transformIgnorePatterns: [
-    // if you ever need to transform any node_modules, you can tweak this
     "/node_modules/",
   ],
-  // If your code uses ESM-only deps, you might also need:
   // extensionsToTreatAsEsm: ['.ts', '.tsx']
 };

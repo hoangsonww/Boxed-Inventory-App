@@ -1,4 +1,3 @@
-// pages/_app.tsx
 import type { AppProps } from "next/app";
 import { useState } from "react";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";

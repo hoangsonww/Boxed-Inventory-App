@@ -28,7 +28,7 @@ export const createBox = async (box: NewBox): Promise<Box> => {
   const { data, error } = await supabase
     .from("boxes")
     .insert(box)
-    .select("*") // ← ensure the inserted row is returned
+    .select("*")
     .single();
 
   if (error) throw error;
@@ -44,7 +44,7 @@ export const updateBox = async (
     .from("boxes")
     .update(updates)
     .eq("id", id)
-    .select("*") // ← ensure the updated row is returned
+    .select("*")
     .single();
 
   if (error) throw error;

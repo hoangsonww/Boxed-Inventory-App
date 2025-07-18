@@ -1,5 +1,3 @@
-// src/supabase/queries/collaborators.ts
-
 import { supabase } from "../client";
 import { collaboratorSchema } from "../types";
 import type { Collaborator, NewCollaborator } from "../types";
@@ -24,8 +22,8 @@ export const addCollaborator = async (
   const { data, error } = await supabase
     .from("box_collaborators")
     .insert({ box_id: boxId, collaborator_profile_id: collaboratorId, role })
-    .select("*") // ← ensure the inserted row is returned
-    .single(); // ← return a single record
+    .select("*")
+    .single();
 
   if (error) throw error;
   return collaboratorSchema.parse(data);

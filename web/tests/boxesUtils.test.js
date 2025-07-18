@@ -1,13 +1,9 @@
-// tests/boxesUtils.test.js
-
-// 1) Mock the Supabase client
 jest.mock("../supabase/client", () => ({
   supabase: {
     from: jest.fn(),
   },
 }));
 
-// 2) Mock your Zod schema so parse just returns the raw data
 jest.mock("../supabase/types", () => ({
   boxSchema: {
     array: () => ({ parse: (data) => data }),
@@ -28,7 +24,6 @@ describe("Supabase boxes utilities", () => {
   let mockBuilder;
 
   beforeEach(() => {
-    // a single “query builder” object that all .from() calls return
     mockBuilder = {
       select: jest.fn().mockReturnThis(),
       eq: jest.fn().mockReturnThis(),
@@ -37,7 +32,6 @@ describe("Supabase boxes utilities", () => {
       insert: jest.fn().mockReturnThis(),
       update: jest.fn().mockReturnThis(),
       delete: jest.fn().mockReturnThis(),
-      // these two will be set per‐test:
       data: null,
       error: null,
     };

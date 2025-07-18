@@ -1,4 +1,3 @@
-// lib/chatWithBoxAI.ts
 import {
   GoogleGenerativeAI,
   HarmCategory,

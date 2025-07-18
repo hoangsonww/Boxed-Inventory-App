@@ -50,7 +50,6 @@ export default function ItemCard({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  /* refresh form fields each time the modal opens */
   useEffect(() => {
     if (open) {
       setName(item.name);
@@ -59,7 +58,6 @@ export default function ItemCard({
     }
   }, [open, item]);
 
-  /* save edits */
   const onSave = async () => {
     let photo_url = item.photo_url;
     if (file) {
@@ -84,7 +82,6 @@ export default function ItemCard({
       .eq("id", item.id);
 
     setOpen(false);
-    // 👉 trigger parent refresh here if needed
   };
 
   const typeBadgeClass = type
@@ -93,10 +90,8 @@ export default function ItemCard({
 
   return (
     <div className="relative flex flex-col gap-2 rounded-lg border border-border bg-card p-4 shadow-sm transition hover:shadow-md">
-      {/* Name */}
       <p className="truncate text-lg font-medium">{item.name}</p>
 
-      {/* Quantity + last used */}
       <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
         <span>Qty: {item.quantity}</span>
         {item.last_used && (
@@ -120,7 +115,6 @@ export default function ItemCard({
         </div>
       )}
 
-      {/* Bottom bar: pill (L) + edit (R) */}
       <div className="mt-2 flex items-center justify-between">
         {type ? (
           <span
@@ -144,7 +138,6 @@ export default function ItemCard({
             </Button>
           </DialogTrigger>
 
-          {/* ───────── Modal ───────── */}
           <DialogContent className="max-w-md space-y-6">
             <h2 className="text-lg font-semibold">Edit item</h2>
 
@@ -212,7 +205,6 @@ export default function ItemCard({
         </Dialog>
       </div>
 
-      {/* Optional box info */}
       {showBox && box && (
         <div className="mt-4 flex items-center justify-between border-t pt-2 text-sm text-muted-foreground">
           <Link

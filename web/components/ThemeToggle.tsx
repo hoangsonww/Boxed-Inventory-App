@@ -16,7 +16,6 @@ export default function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<Theme>("system");
 
-  // Apply the given theme, update <html> class and localStorage
   const applyTheme = useCallback((newTheme: Theme) => {
     const root = document.documentElement;
     if (newTheme === "light") {
@@ -36,7 +35,6 @@ export default function ThemeToggle() {
     setTheme(newTheme);
   }, []);
 
-  // On mount, read saved preference and set up listener for system changes
   useEffect(() => {
     setMounted(true);
     const stored = localStorage.getItem("theme") as Theme | null;

@@ -4,6 +4,8 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { UserPlus2 } from "lucide-react";
+import Head from "next/head";
 
 export default function RegisterPage() {
   const supabase = useSupabaseClient();
@@ -39,72 +41,92 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="mx-auto max-w-md space-y-6">
-      <h2 className="text-3xl font-semibold text-center">
-        Create a Boxed Account
-      </h2>
+    <>
+      <Head>
+        <title>Register - Boxed</title>
+        <meta
+          name="description"
+          content="Create a Boxed account to manage your boxes and belongings efficiently."
+        />
+      </Head>
 
-      {error && (
-        <Alert variant="destructive">
-          <AlertTitle>Registration Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      <form onSubmit={handleRegister} className="flex flex-col gap-4">
-        <div>
-          <label className="block mb-1 text-sm font-medium" htmlFor="email">
-            Email
-          </label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+      <div className="mx-auto max-w-md space-y-6">
+        <div className="flex flex-col items-center">
+          <UserPlus2 className="h-12 w-12 text-primary" />
         </div>
+        <h2 className="text-3xl font-semibold text-center">
+          Create a Boxed Account
+        </h2>
+        <p className="text-center text-muted-foreground">
+          Join Boxed to revolutionize your box management experience. Sign up
+          now to get started!
+        </p>
 
-        <div>
-          <label className="block mb-1 text-sm font-medium" htmlFor="password">
-            Password
-          </label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+        {error && (
+          <Alert variant="destructive">
+            <AlertTitle>Registration Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
-        <div>
-          <label className="block mb-1 text-sm font-medium" htmlFor="confirm">
-            Confirm Password
-          </label>
-          <Input
-            id="confirm"
-            type="password"
-            placeholder="••••••••"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            required
-          />
-        </div>
+        <form onSubmit={handleRegister} className="flex flex-col gap-4">
+          <div>
+            <label className="block mb-1 text-sm font-medium" htmlFor="email">
+              Email
+            </label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <Button type="submit" size="lg" disabled={loading}>
-          {loading ? "Registering..." : "Register"}
-        </Button>
-      </form>
+          <div>
+            <label
+              className="block mb-1 text-sm font-medium"
+              htmlFor="password"
+            >
+              Password
+            </label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
 
-      <p className="text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
-        <a href="/login" className="text-primary hover:underline">
-          Sign in
-        </a>
-      </p>
-    </div>
+          <div>
+            <label className="block mb-1 text-sm font-medium" htmlFor="confirm">
+              Confirm Password
+            </label>
+            <Input
+              id="confirm"
+              type="password"
+              placeholder="••••••••"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+            />
+          </div>
+
+          <Button type="submit" size="lg" disabled={loading}>
+            {loading ? "Registering..." : "Register"}
+          </Button>
+        </form>
+
+        <p className="text-center text-sm text-muted-foreground">
+          Already have an account?{" "}
+          <a href="/login" className="text-primary hover:underline">
+            Sign in
+          </a>
+        </p>
+      </div>
+    </>
   );
 }

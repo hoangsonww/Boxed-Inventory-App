@@ -1,17 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { toast } from "sonner"; // <-- Sonner
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-
-// shadcn Form primitives
 import {
   Form,
   FormField,
@@ -38,6 +36,7 @@ import {
 } from "@/components/ui/card";
 
 import { createBox } from "@/supabase/queries/boxes";
+import Head from "next/head";
 
 const boxSchema = z.object({
   name: z.string().min(1, "Box name is required").max(50),
@@ -50,6 +49,12 @@ type BoxFormValues = z.infer<typeof boxSchema>;
 export default function NewBoxPage() {
   const router = useRouter();
   const session = useSession();
+
+  useEffect(() => {
+    if (session === null) {
+      router.push("/login");
+    }
+  }, [session, router]);
 
   const form = useForm<BoxFormValues>({
     resolver: zodResolver(boxSchema),
@@ -84,111 +89,123 @@ export default function NewBoxPage() {
   }
 
   return (
-    <div className="mx-auto max-w-lg">
-      <Card className="overflow-visible">
-        <CardHeader>
-          <CardTitle className="text-2xl">Create a New Box</CardTitle>
-        </CardHeader>
+    <>
+      <Head>
+        <title>Create New Box - Boxed</title>
+        <meta
+          name="description"
+          content="Create a new box to organize your belongings efficiently."
+        />
+      </Head>
 
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6"
-            noValidate
-          >
-            <CardContent className="space-y-6 pt-0">
-              {/* Name Field */}
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name / Label</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="e.g. Box #3 or Closet Bin"
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      A descriptive name helps you identify it quickly.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+      <div className="mx-auto max-w-lg">
+        <Card className="overflow-visible">
+          <CardHeader>
+            <CardTitle className="text-2xl">Create a New Box</CardTitle>
+          </CardHeader>
 
-              {/* Location Field */}
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Location (optional)</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Under Bed, Storage Unit, etc."
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Helps with sorting & filters.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-6"
+              noValidate
+            >
+              <CardContent className="space-y-6 pt-0">
+                {/* Name Field */}
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name / Label</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="e.g. Box #3 or Closet Bin"
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        A descriptive name helps you identify it quickly.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              {/* Status Field */}
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="unpacked">Unpacked</SelectItem>
-                          <SelectItem value="packed">Packed</SelectItem>
-                          <SelectItem value="in_transit">In Transit</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormDescription>
-                      “Packed” when ready, “In Transit” while moving.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
+                {/* Location Field */}
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Location (optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Under Bed, Storage Unit, etc."
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Helps with sorting & filters.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <CardFooter className="pt-0">
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={form.formState.isSubmitting}
-              >
-                {form.formState.isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  "Create Box"
-                )}
-              </Button>
-            </CardFooter>
-          </form>
-        </Form>
-      </Card>
-    </div>
+                {/* Status Field */}
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="unpacked">Unpacked</SelectItem>
+                            <SelectItem value="packed">Packed</SelectItem>
+                            <SelectItem value="in_transit">
+                              In Transit
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormDescription>
+                        “Packed” when ready, “In Transit” while moving.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+
+              <CardFooter className="pt-0">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    "Create Box"
+                  )}
+                </Button>
+              </CardFooter>
+            </form>
+          </Form>
+        </Card>
+      </div>
+    </>
   );
 }

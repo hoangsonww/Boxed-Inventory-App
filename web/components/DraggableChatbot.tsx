@@ -23,7 +23,7 @@ import remarkGfm from "remark-gfm";
 
 import { chatWithBoxAI } from "@/lib/chatWithBoxAI";
 
-// Types we expect (adjust if your actual types differ)
+// Types we expect
 type BoxRow = {
   id: string;
   name: string;
@@ -74,13 +74,10 @@ export default function Chatbot() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Inventory context state
   const [contextReady, setContextReady] = useState(false);
   const [contextSummary, setContextSummary] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-  /* ───────────────── Inventory Fetch & Summarize ───────────────── */
 
   const summarizeInventory = useCallback(
     (boxes: BoxRow[], items: ItemRow[], collaborators: CollaboratorRow[]) => {
@@ -232,8 +229,6 @@ export default function Chatbot() {
       void fetchInventoryContext();
     }
   }, [open, isLoggedIn, contextReady, fetchInventoryContext]);
-
-  /* ───────────────── Chat Logic ───────────────── */
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -439,7 +434,6 @@ export default function Chatbot() {
           </div>
 
           <DialogFooter className="hidden" />
-          {/* If you want a default close icon, add <DialogClose /> here; left out per instructions of no custom X. */}
         </DialogContent>
       </Dialog>
     </div>

@@ -1,4 +1,4 @@
-name: CI / CD Pipeline – Boxed App
+name: CI / CD Pipeline - Boxed App
 
 on:
   push:

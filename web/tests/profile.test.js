@@ -1,4 +1,3 @@
-// tests/profile.test.js
 jest.mock("../supabase/client", () => ({
   supabase: { from: jest.fn() },
 }));

@@ -1,6 +1,6 @@
 # 📦 **Boxed - Your Smart Home Inventory, Packing & Retrieval Assistant**
 
-**Boxed** helps you _actually know_ where your stuff is. Create boxes, drop items in, add photos, tag types, collaborators, mark packed status, search instantly – then ask **BoxedAI** _“Where’s my winter jacket?”_ and get an answer sourced from your real inventory.
+**Boxed** helps you _actually know_ where your stuff is. Create boxes, drop items in, add photos, tag types, collaborators, mark packed status, search instantly - then ask **BoxedAI** _“Where’s my winter jacket?”_ and get an answer sourced from your real inventory.
 
 **Think “Notion for your physical belongings” with an AI locator + packing coach.**
 
@@ -125,7 +125,7 @@ Boxed is built with a focus on **simplicity**, **usability**, and **AI-powered a
 
 ## 🖥 UI / UX Highlights
 
-- **Inventory Dashboard**: Drag re-order with handle hover (opacity reveal) – persists user order client-side.
+- **Inventory Dashboard**: Drag re-order with handle hover (opacity reveal) - persists user order client-side.
 - **Box Hero Header**: Gradient overlay + inline editable text + status pill + photo controls + tooltip for destructive photo removal.
 - **ItemCard**: Photo / placeholder, quantity, relative “last used”, type pill, bottom-right edit pencil leading to modal.
 - **Item Edit Modal**: Name / quantity / photo choose → upload to bucket → optimistic closure.
@@ -260,8 +260,8 @@ CSV generation is **client-side** (no server round trip) → uses `Blob` + `URL.
 | **Auth**             | Supabase email/password (JWT in local storage)                                           |
 | **Row Access**       | Filtered by `owner_profile_id` & planned RLS policies                                    |
 | **AI Privacy**       | Only summarized, truncated inventory text is sent (no raw email / personal profile data) |
-| **File Upload**      | Supabase Storage – file naming uses box/item IDs + timestamp to avoid collisions         |
-| **Rate Limiting**    | (Future) – Add edge function or server middleware for chat frequency                     |
+| **File Upload**      | Supabase Storage - file naming uses box/item IDs + timestamp to avoid collisions         |
+| **Rate Limiting**    | (Future) - Add edge function or server middleware for chat frequency                     |
 | **No Hallucination** | Explicit system instructions + inventory summary emphasis                                |
 
 ---
@@ -301,7 +301,7 @@ CSV generation is **client-side** (no server round trip) → uses `Blob` + `URL.
 
 ## 📄 License
 
-**MIT** – See [`LICENSE`](LICENSE).
+**MIT** - See [`LICENSE`](LICENSE).
 Attribution appreciated. Do not misrepresent generated BoxedAI responses as guaranteed factual location if user inventory is incomplete.
 
 ---
@@ -315,7 +315,7 @@ Built with ☕ + chaotic moving experiences by **Son Nguyen**.
 - Email: [hoangson091104@gmail.com](mailto:hoangson091104@gmail.com)
 
 > \[!NOTE]
-> _“Find. Pack. Ask. Relax.” – Boxed tagline_
+> _“Find. Pack. Ask. Relax.” - Boxed tagline_
 
 ---
 

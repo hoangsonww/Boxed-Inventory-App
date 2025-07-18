@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// ---- PROFILES ----
 export const profileSchema = z.object({
   id: z.string().uuid(),
   username: z.string().nullable().optional(),
@@ -11,7 +10,6 @@ export const profileSchema = z.object({
 export type Profile = z.infer<typeof profileSchema>;
 export type NewProfile = Omit<Profile, "created_at">;
 
-// ---- BOXES (now with optional photo_url) ----
 export const boxSchema = z.object({
   id: z.string().uuid(),
   owner_profile_id: z.string().uuid(),
@@ -25,7 +23,6 @@ export const boxSchema = z.object({
 export type Box = z.infer<typeof boxSchema>;
 export type NewBox = Omit<Box, "id" | "created_at" | "updated_at">;
 
-// ---- COLLABORATORS ----
 export const collaboratorSchema = z.object({
   box_id: z.string().uuid(),
   collaborator_profile_id: z.string().uuid(),
@@ -34,7 +31,6 @@ export const collaboratorSchema = z.object({
 export type Collaborator = z.infer<typeof collaboratorSchema>;
 export type NewCollaborator = Collaborator;
 
-// ---- ITEM TYPES ----
 export const itemTypeSchema = z.object({
   id: z.number(),
   name: z.string(),
@@ -42,7 +38,6 @@ export const itemTypeSchema = z.object({
 export type ItemType = z.infer<typeof itemTypeSchema>;
 export type NewItemType = Omit<ItemType, "id">;
 
-// ---- ITEMS (nullable fields) ----
 export const itemSchema = z.object({
   id: z.string().uuid(),
   box_id: z.string().uuid(),
@@ -59,7 +54,6 @@ export const itemSchema = z.object({
 export type Item = z.infer<typeof itemSchema>;
 export type NewItem = Omit<Item, "id" | "created_at" | "updated_at">;
 
-// ---- SEARCH FILTERS ----
 export const searchFiltersSchema = z.object({
   typeIds: z.array(z.number()).optional(),
   boxIds: z.array(z.string()).optional(),
@@ -67,7 +61,6 @@ export const searchFiltersSchema = z.object({
 });
 export type SearchFilters = z.infer<typeof searchFiltersSchema>;
 
-// ---- DATABASE INTERFACE ----
 export interface Database {
   public: {
     Tables: {

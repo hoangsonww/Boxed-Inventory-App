@@ -50,7 +50,6 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 
-/* dnd-kit */
 import {
   DndContext,
   PointerSensor,
@@ -67,10 +66,8 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import Head from "next/head";
 
-/*──────────────────────────────────────────────────────────
-  Status styling helpers
-──────────────────────────────────────────────────────────*/
 const statusBadgeClasses: Record<Box["status"], string> = {
   unpacked:
     "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 border border-green-300 dark:border-green-700",
@@ -90,9 +87,6 @@ function StatusPill({ status }: { status: Box["status"] }) {
   );
 }
 
-/*──────────────────────────────────────────────────────────
-  Inline editable text field (lightweight)
-──────────────────────────────────────────────────────────*/
 function EditableText({
   value,
   placeholder,
@@ -218,9 +212,6 @@ function EditableText({
   );
 }
 
-/*──────────────────────────────────────────────────────────
-  Sortable Item wrapper w/ handle‑only drag
-──────────────────────────────────────────────────────────*/
 interface SortableItemProps {
   id: string;
   item: Item;
@@ -245,7 +236,6 @@ function SortableItem({ id, item, type }: SortableItemProps) {
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
       <div className="group relative rounded-lg">
-        {/* drag handle (bigger target) */}
         <button
           type="button"
           {...listeners}
@@ -262,9 +252,6 @@ function SortableItem({ id, item, type }: SortableItemProps) {
   );
 }
 
-/*──────────────────────────────────────────────────────────
-  Box Hero (photo + meta) – looks like a box
-──────────────────────────────────────────────────────────*/
 export function BoxHero({
   box,
   isOwner,
@@ -416,23 +403,26 @@ export function BoxHero({
   );
 }
 
-/*──────────────────────────────────────────────────────────
-  Page
-──────────────────────────────────────────────────────────*/
 export default function BoxDetailPage() {
   const { query } = useRouter();
   const boxId = query.id as string | undefined;
 
   const session = useSession();
+  const router = useRouter();
   const supabase = useSupabaseClient();
+
+  useEffect(() => {
+    if (session === null) {
+      router.push("/login");
+    }
+  }, [session, router]);
 
   const [box, setBox] = useState<Box | null>(null);
   const [items, setItems] = useState<Item[]>([]);
   const [order, setOrder] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  /* Add‑item form state */
-  const [addOpen, setAddOpen] = useState(true); // collapsible
+  const [addOpen, setAddOpen] = useState(true);
   const [name, setName] = useState("");
   const [qty, setQty] = useState(1);
   const [file, setFile] = useState<File | null>(null);
@@ -468,9 +458,7 @@ export default function BoxDetailPage() {
     return () => clearTimeout(debounceRef.current);
   }, [searchQuery, order, items]);
 
-  /* box photo hidden input */
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
   const isOwner = session?.user.id === box?.owner_profile_id;
 
   /* sensors */
@@ -652,7 +640,7 @@ export default function BoxDetailPage() {
 
   /* drag handlers */
   const handleDragStart = (_e: DragStartEvent) => {
-    // nothing; we could set activeId if we want styling
+    // nothing for now
   };
 
   const LOCALSTORAGE_KEY = `box-order-${boxId}`;
@@ -663,14 +651,14 @@ export default function BoxDetailPage() {
     (async () => {
       setLoading(true);
 
-      // 1) fetch box
+      // fetch box
       const b = await getBox(boxId);
       setBox(b);
 
-      // 2) fetch items
+      // fetch items
       const its = await getItemsByBox(boxId);
 
-      // 3) restore saved order
+      // restore saved order
       const key = `box-order-${boxId}`;
       let ids = its.map((i) => i.id);
       if (typeof window !== "undefined") {
@@ -728,134 +716,143 @@ export default function BoxDetailPage() {
   }
 
   return (
-    <div className="space-y-10">
-      {/* Hidden file input for box photo */}
-      {isOwner && (
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          className="sr-only"
-          onChange={handleBoxPhotoInput}
+    <>
+      <Head>
+        <title>{box.name} - Boxed</title>
+        <meta
+          name="description"
+          content="View and manage your box details, items, and collaborators."
         />
-      )}
+      </Head>
 
-      {/* Box Hero w/ photo & controls */}
-      <BoxHero
-        box={box}
-        isOwner={!!isOwner}
-        onUploadClick={() => fileInputRef.current?.click()}
-        onRemovePhoto={removeBoxPhoto}
-        onTogglePacked={togglePacked}
-        onRename={renameBox}
-        onRelocate={relocateBox}
-        totalItems={totalItems}
-        totalQty={totalQty}
-      />
-
-      {/* side‑by‑side grid */}
-      <div className="mx-auto max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+      <div className="space-y-10">
+        {/* Hidden file input for box photo */}
         {isOwner && (
-          <div className="w-full">
-            <AddItemCard boxId={box.id} onItemAdded={() => loadAll(box.id)} />
-          </div>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            className="sr-only"
+            onChange={handleBoxPhotoInput}
+          />
         )}
-        <div className="w-full">
-          <CollaboratorsSection boxId={box.id} />
-        </div>
-      </div>
 
-      {/* Divider */}
-      <div className="border-b border-border" />
+        {/* Box Hero w/ photo & controls */}
+        <BoxHero
+          box={box}
+          isOwner={!!isOwner}
+          onUploadClick={() => fileInputRef.current?.click()}
+          onRemovePhoto={removeBoxPhoto}
+          onTogglePacked={togglePacked}
+          onRename={renameBox}
+          onRelocate={relocateBox}
+          totalItems={totalItems}
+          totalQty={totalQty}
+        />
 
-      <Card className="space-y-0">
-        <CardHeader
-          className="flex items-center justify-between cursor-pointer"
-          onClick={() => setSearchOpen((o) => !o)}
-        >
-          <CardTitle className="text-base">
-            Your Items{" "}
-            {isOwner && (
-              <span className="text-sm text-muted-foreground">
-                (drag to reorder)
-              </span>
-            )}
-          </CardTitle>
-          {searchOpen ? (
-            <ChevronUp className="h-4 w-4 text-muted-foreground" />
-          ) : (
-            <ChevronDown className="h-4 w-4 text-muted-foreground" />
-          )}
-        </CardHeader>
-
-        {searchOpen && (
-          <CardContent className="space-y-4">
-            {/* Search input */}
-            <div className="flex gap-2">
-              <Input
-                placeholder="Search items..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+        {/* side‑by‑side grid */}
+        <div className="mx-auto max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          {isOwner && (
+            <div className="w-full">
+              <AddItemCard boxId={box.id} onItemAdded={() => loadAll(box.id)} />
             </div>
+          )}
+          <div className="w-full">
+            <CollaboratorsSection boxId={box.id} />
+          </div>
+        </div>
 
-            {/* Filtered grid */}
-            {filteredOrder.length > 0 ? (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext
-                  items={filteredOrder}
-                  strategy={rectSortingStrategy}
-                >
-                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {filteredOrder.map((id) => {
-                      const item = items.find((i) => i.id === id)!;
-                      return (
-                        <SortableItem
-                          key={id}
-                          id={id}
-                          item={item}
-                          type={typeById[item.type_id!]}
-                        />
-                      );
-                    })}
-                  </div>
-                </SortableContext>
-              </DndContext>
+        {/* Divider */}
+        <div className="border-b border-border" />
+
+        <Card className="space-y-0">
+          <CardHeader
+            className="flex items-center justify-between cursor-pointer"
+            onClick={() => setSearchOpen((o) => !o)}
+          >
+            <CardTitle className="text-base">
+              Your Items{" "}
+              {isOwner && (
+                <span className="text-sm text-muted-foreground">
+                  (drag to reorder)
+                </span>
+              )}
+            </CardTitle>
+            {searchOpen ? (
+              <ChevronUp className="h-4 w-4 text-muted-foreground" />
             ) : (
-              <p className="text-center text-muted-foreground">
-                {searchQuery.trim()
-                  ? `No items match “${searchQuery.trim()}”.`
-                  : "No items yet."}
-              </p>
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
             )}
-          </CardContent>
-        )}
-      </Card>
+          </CardHeader>
 
-      {/* Minimal drag CSS override */}
-      <style jsx global>{`
-        [data-rfd-drag-handle] {
-          touch-action: none;
-        }
-        .box-cardboard-bg {
-          background-image:
-            repeating-linear-gradient(
-              -45deg,
-              rgba(0, 0, 0, 0.04) 0 2px,
-              rgba(0, 0, 0, 0) 2px 4px
-            ),
-            linear-gradient(
-              to bottom,
-              oklch(0.87 0.03 70) 0%,
-              oklch(0.82 0.04 70) 100%
-            );
-        }
-      `}</style>
-    </div>
+          {searchOpen && (
+            <CardContent className="space-y-4">
+              {/* Search input */}
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Search items..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+
+              {/* Filtered grid */}
+              {filteredOrder.length > 0 ? (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={filteredOrder}
+                    strategy={rectSortingStrategy}
+                  >
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                      {filteredOrder.map((id) => {
+                        const item = items.find((i) => i.id === id)!;
+                        return (
+                          <SortableItem
+                            key={id}
+                            id={id}
+                            item={item}
+                            type={typeById[item.type_id!]}
+                          />
+                        );
+                      })}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              ) : (
+                <p className="text-center text-muted-foreground">
+                  {searchQuery.trim()
+                    ? `No items match “${searchQuery.trim()}”.`
+                    : "No items yet."}
+                </p>
+              )}
+            </CardContent>
+          )}
+        </Card>
+
+        <style jsx global>{`
+          [data-rfd-drag-handle] {
+            touch-action: none;
+          }
+          .box-cardboard-bg {
+            background-image:
+              repeating-linear-gradient(
+                -45deg,
+                rgba(0, 0, 0, 0.04) 0 2px,
+                rgba(0, 0, 0, 0) 2px 4px
+              ),
+              linear-gradient(
+                to bottom,
+                oklch(0.87 0.03 70) 0%,
+                oklch(0.82 0.04 70) 100%
+              );
+          }
+        `}</style>
+      </div>
+    </>
   );
 }

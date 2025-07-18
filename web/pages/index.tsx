@@ -30,7 +30,6 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 
-/*──────────────────── helpers ────────────────────*/
 function useCountUp(target: number, duration = 1200) {
   const [val, setVal] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
@@ -57,7 +56,6 @@ function useCountUp(target: number, duration = 1200) {
   return { ref, val };
 }
 
-/*──────────────────── data ────────────────────*/
 const rotatingA = ["clutter", "chaos", "mess", "mystery"];
 const rotatingB = ["control", "order", "clarity", "peace"];
 
@@ -134,7 +132,7 @@ const testimonials = [
   {
     name: "Priya S.",
     role: "Maker & Etsy seller",
-    msg: "I locate beads & fabrics in seconds – no more digging!",
+    msg: "I locate beads & fabrics in seconds - no more digging!",
   },
   {
     name: "Martin B.",
@@ -162,10 +160,10 @@ const pricing = [
 ];
 
 const faqs = [
-  { q: "Is Boxed free?", a: "Yes – the Starter plan is free forever." },
+  { q: "Is Boxed free?", a: "Yes - the Starter plan is free forever." },
   { q: "Who can see my data?", a: "Only you (and those you invite)." },
-  { q: "Will my counts sync offline?", a: "Yes – the PWA caches data." },
-  { q: "Do QR codes need internet?", a: "No – content is cached locally." },
+  { q: "Will my counts sync offline?", a: "Yes - the PWA caches data." },
+  { q: "Do QR codes need internet?", a: "No - content is cached locally." },
 ];
 
 const roadmap = [
@@ -175,9 +173,7 @@ const roadmap = [
   { q: "Q2 ’26", t: "Smart suggestions (AI)" },
 ];
 
-/*──────────────────── page ────────────────────*/
 export default function Landing() {
-  /* rotating headline words */
   const [idx, setIdx] = useState(0);
   useEffect(() => {
     const id = setInterval(
@@ -187,7 +183,6 @@ export default function Landing() {
     return () => clearInterval(id);
   }, []);
 
-  /* counters */
   const boxes = useCountUp(42000);
   const items = useCountUp(311000);
   const homes = useCountUp(152);
@@ -195,7 +190,7 @@ export default function Landing() {
   return (
     <>
       <Head>
-        <title>Boxed – Minimal inventory tracker</title>
+        <title>Boxed - Minimal inventory tracker</title>
         <meta
           name="description"
           content="Find anything you own in seconds. Free, fast & beautifully simple."
@@ -220,7 +215,7 @@ export default function Landing() {
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-              Know what’s in every box, drawer or storage unit – without lifting
+              Know what’s in every box, drawer or storage unit - without lifting
               a lid.
             </p>
 
@@ -250,7 +245,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/*──────── Stats ────────*/}
+        {/* Stats */}
         <section className="grid w-full max-w-6xl grid-cols-1 gap-8 text-center sm:grid-cols-3">
           {[
             { ref: boxes.ref, label: "Boxes tracked", val: boxes.val },
@@ -266,7 +261,7 @@ export default function Landing() {
           ))}
         </section>
 
-        {/*──────── Feature grid ────────*/}
+        {/* Feature grid */}
         <section
           id="features"
           className="grid w-full max-w-7xl gap-8 px-4 md:grid-cols-2 lg:grid-cols-3"
@@ -285,7 +280,7 @@ export default function Landing() {
           ))}
         </section>
 
-        {/*──────── Use‑cases ────────*/}
+        {/* Use‑cases */}
         <section className="w-full max-w-7xl px-4">
           <h2 className="mb-8 text-center text-3xl font-bold">
             Perfect for...
@@ -306,7 +301,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/*──────── Tech stack ────────*/}
+        {/* Tech stack */}
         <section className="w-full max-w-6xl px-4">
           <h2 className="mb-8 text-center text-3xl font-bold">Powered by</h2>
           <div className="flex flex-wrap justify-center gap-8">
@@ -322,7 +317,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/*──────── Testimonials ────────*/}
+        {/* Testimonials */}
         <section className="w-full max-w-7xl px-4">
           <h2 className="mb-8 text-center text-3xl font-bold">
             Loved by folks everywhere
@@ -342,11 +337,11 @@ export default function Landing() {
           </div>
         </section>
 
-        {/*──────── Pricing ────────*/}
+        {/* Pricing */}
         <section className="w-full max-w-7xl px-4">
           <h2 className="mb-6 text-center text-3xl font-bold">Pricing</h2>
           <p className="mb-10 text-center text-sm text-muted-foreground">
-            Absolutely <b>free during beta</b> – upgrades later.
+            Absolutely <b>free during beta</b> - upgrades later.
           </p>
           <div className="grid gap-8 md:grid-cols-3">
             {pricing.map((p) => (
@@ -373,7 +368,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/*──────── Roadmap ────────*/}
+        {/* Roadmap */}
         <section className="w-full max-w-6xl px-4">
           <h2 className="mb-8 text-center text-3xl font-bold">Roadmap</h2>
           <div className="relative border-l pl-6">
@@ -393,7 +388,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/*──────── Newsletter ────────*/}
+        {/* Newsletter */}
         <section className="w-full max-w-6xl rounded-xl border bg-card p-10 px-4 flex flex-col md:flex-row items-center gap-6">
           <Mail size={32} className="text-primary shrink-0" />
           <div className="flex-1">
@@ -422,7 +417,7 @@ export default function Landing() {
           </form>
         </section>
 
-        {/*──────── FAQ ────────*/}
+        {/* FAQ */}
         <section className="w-full max-w-5xl px-4">
           <h2 className="mb-8 text-center text-3xl font-bold">FAQ</h2>
           <Accordion type="single" collapsible>
@@ -443,7 +438,7 @@ export default function Landing() {
           </Accordion>
         </section>
 
-        {/*──────── CTA banner ────────*/}
+        {/* CTA banner */}
         <section className="w-full max-w-6xl rounded-2xl bg-gradient-to-br from-primary via-accent to-secondary p-[2px]">
           <div className="flex flex-col items-center justify-between gap-6 rounded-[inherit] bg-background px-8 py-14 md:flex-row">
             <div>
@@ -451,7 +446,7 @@ export default function Landing() {
                 Ready to get organized?
               </h3>
               <p className="text-muted-foreground">
-                Sign up & start boxing – free while in beta.
+                Sign up & start boxing - free while in beta.
               </p>
             </div>
             <Link href="/register">
@@ -465,7 +460,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/*──────── animated border keyframes ────────*/}
+        {/* animated border keyframes */}
         <style jsx>{`
           .animated-border::before {
             content: "";

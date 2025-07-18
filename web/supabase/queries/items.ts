@@ -26,7 +26,7 @@ export const createItem = async (item: NewItem): Promise<Item> => {
   const { data, error } = await supabase
     .from("items")
     .insert(item)
-    .select("*") // ← ensure the inserted row is returned
+    .select("*")
     .single();
   if (error) throw error;
   return itemSchema.parse(data);
@@ -40,7 +40,7 @@ export const updateItem = async (
     .from("items")
     .update(updates)
     .eq("id", id)
-    .select("*") // ← ensure the updated row is returned
+    .select("*")
     .single();
   if (error) throw error;
   return itemSchema.parse(data);
