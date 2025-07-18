@@ -38,6 +38,12 @@ export const itemTypeSchema = z.object({
 export type ItemType = z.infer<typeof itemTypeSchema>;
 export type NewItemType = Omit<ItemType, "id">;
 
+export type CollaboratorInfo = {
+  id: string;
+  name: string;
+  email: string;
+};
+
 export const itemSchema = z.object({
   id: z.string().uuid(),
   box_id: z.string().uuid(),

@@ -18,7 +18,9 @@ export const upsertProfile = async (
   const { data, error } = await supabase
     .from("profiles")
     .upsert(profile)
+    .select("*")
     .single();
+
   if (error) throw error;
   return profileSchema.parse(data);
 };

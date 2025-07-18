@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSession } from "@supabase/auth-helpers-react";
+import { useSession, useSessionContext } from "@supabase/auth-helpers-react";
 import { toast } from "sonner";
 
 import {
@@ -32,6 +32,7 @@ import ItemCard from "@/components/ItemCard";
 import { getBoxesByOwner } from "@/supabase/queries/boxes";
 import { getItemsByBox } from "@/supabase/queries/items";
 import { searchItems } from "@/supabase/queries/search";
+import { getAccessibleBoxes } from "@/supabase/queries/boxes";
 import type { Box, Item } from "@/supabase/types";
 import { Search, GripVertical, ChevronUp, ChevronDown } from "lucide-react";
 import Head from "next/head";
@@ -70,7 +71,7 @@ function SortableBoxCard({ id, box }: { id: string; box: Box }) {
 }
 
 export default function Dashboard() {
-  const session = useSession();
+  const { session, isLoading: authLoading } = useSessionContext();
   const userId = session?.user.id!;
   const router = useRouter();
 
@@ -89,34 +90,39 @@ export default function Dashboard() {
   );
 
   useEffect(() => {
-    if (session === null) {
+    if (!authLoading && !session) {
       router.push("/login");
     }
-  }, [session, router]);
+  }, [authLoading, session, router]);
 
   const LOCALSTORAGE_KEY = `dashboard-box-order-${userId}`;
 
   useEffect(() => {
-    if (!session) return;
-    (async () => {
-      const fetched = await getBoxesByOwner(userId);
-      setBoxes(fetched);
+    // wait until auth is initialized
+    if (authLoading) return;
+    // then bail if there’s no session or no userId
+    if (!session || !userId) return;
 
-      let ids = fetched.map((b) => b.id);
-      const saved = localStorage.getItem(LOCALSTORAGE_KEY);
-      if (saved) {
+    (async () => {
+      try {
+        const fetched = await getAccessibleBoxes(userId);
+        setBoxes(fetched);
+
+        // restore saved order, dropping any stale IDs
+        const ids = fetched.map((b) => b.id);
+        let saved: string[] = [];
         try {
-          const arr: string[] = JSON.parse(saved);
-          const kept = arr.filter((id) => ids.includes(id));
-          const added = ids.filter((id) => !kept.includes(id));
-          ids = [...kept, ...added];
-        } catch {
-          // ignore
-        }
+          saved = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY) || "[]");
+        } catch {}
+        const kept = saved.filter((id) => ids.includes(id));
+        const added = ids.filter((id) => !kept.includes(id));
+        setOrder([...kept, ...added]);
+      } catch (err) {
+        console.error(err);
+        toast.error("Could not load boxes.");
       }
-      setOrder(ids);
     })();
-  }, [session, userId]);
+  }, [authLoading, session, userId]);
 
   const handleDragStart = (_e: DragStartEvent) => {};
   const handleDragEnd = (event: DragEndEvent) => {
@@ -248,7 +254,7 @@ export default function Dashboard() {
               <Button>Add Box</Button>
             </Link>
             <Button onClick={exportCSV} disabled={exporting} variant="outline">
-              {exporting ? "Exporting…" : "Export CSV"}
+              {exporting ? "Exporting..." : "Export CSV"}
             </Button>
           </div>
         </header>

@@ -9,8 +9,6 @@ module.exports = {
   transform: {
     "^.+\\.[tj]s$": "ts-jest",
   },
-  transformIgnorePatterns: [
-    "/node_modules/",
-  ],
+  transformIgnorePatterns: ["/node_modules/"],
   // extensionsToTreatAsEsm: ['.ts', '.tsx']
 };

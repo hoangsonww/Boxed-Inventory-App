@@ -1,5 +1,5 @@
 import { supabase } from "../client";
-import { collaboratorSchema } from "../types";
+import { type CollaboratorInfo, collaboratorSchema } from "../types";
 import type { Collaborator, NewCollaborator } from "../types";
 
 export const getCollaborators = async (
@@ -40,4 +40,31 @@ export const removeCollaborator = async (
     .eq("collaborator_profile_id", collaboratorId);
 
   if (error) throw error;
+};
+
+export const getCollaboratorsWithInfo = async (
+  boxId: string,
+): Promise<CollaboratorInfo[]> => {
+  const { data, error } = await supabase
+    .from("box_collaborators")
+    .select(
+      `
+      collaborator_profile_id,
+      profiles!inner(
+        full_name,
+        email
+      )
+    `,
+    )
+    .eq("box_id", boxId);
+
+  if (error) throw error;
+
+  return (data ?? []).map((row) => {
+    const id = row.collaborator_profile_id;
+    const prof = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles;
+    const name = prof?.full_name ?? id;
+    const email = prof?.email ?? id;
+    return { id, name, email };
+  });
 };

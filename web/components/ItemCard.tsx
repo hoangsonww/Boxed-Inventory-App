@@ -17,6 +17,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 dayjs.extend(relativeTime);
 
@@ -42,6 +43,8 @@ export default function ItemCard({
 }) {
   const supabase = useSupabaseClient();
 
+  // local copy so UI updates immediately
+  const [currentItem, setCurrentItem] = useState(item);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(item.name);
   const [qty, setQty] = useState(item.quantity);
@@ -50,24 +53,30 @@ export default function ItemCard({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // reset local item if parent prop changes
+  useEffect(() => {
+    setCurrentItem(item);
+  }, [item]);
+
+  // when dialog opens, initialize form fields from currentItem
   useEffect(() => {
     if (open) {
-      setName(item.name);
-      setQty(item.quantity);
+      setName(currentItem.name);
+      setQty(currentItem.quantity);
       setFile(null);
     }
-  }, [open, item]);
+  }, [open, currentItem]);
 
   const onSave = async () => {
-    let photo_url = item.photo_url;
+    let photo_url = currentItem.photo_url;
     if (file) {
       setUploading(true);
       const ext = file.name.split(".").pop();
-      const fileName = `${item.box_id}/${Date.now()}.${ext}`;
-      const { error } = await supabase.storage
+      const fileName = `${currentItem.box_id}/${Date.now()}.${ext}`;
+      const { error: uploadErr } = await supabase.storage
         .from("item-photos")
         .upload(fileName, file);
-      if (!error) {
+      if (!uploadErr) {
         const { data } = supabase.storage
           .from("item-photos")
           .getPublicUrl(fileName);
@@ -76,11 +85,24 @@ export default function ItemCard({
       setUploading(false);
     }
 
-    await supabase
+    const { error } = await supabase
       .from("items")
       .update({ name, quantity: qty, photo_url })
-      .eq("id", item.id);
+      .eq("id", currentItem.id);
 
+    if (error) {
+      toast.error("Failed to save changes.");
+      return;
+    }
+
+    // update local state so UI reflects changes immediately
+    setCurrentItem({
+      ...currentItem,
+      name,
+      quantity: qty,
+      photo_url,
+    });
+    toast.success("Item updated.");
     setOpen(false);
   };
 
@@ -90,23 +112,23 @@ export default function ItemCard({
 
   return (
     <div className="relative flex flex-col gap-2 rounded-lg border border-border bg-card p-4 shadow-sm transition hover:shadow-md">
-      <p className="truncate text-lg font-medium">{item.name}</p>
+      <p className="truncate text-lg font-medium">{currentItem.name}</p>
 
       <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-        <span>Qty: {item.quantity}</span>
-        {item.last_used && (
+        <span>Qty: {currentItem.quantity}</span>
+        {currentItem.last_used && (
           <>
             <CalendarClock size={14} />
-            <span>{dayjs(item.last_used).fromNow()}</span>
+            <span>{dayjs(currentItem.last_used).fromNow()}</span>
           </>
         )}
       </div>
 
       {/* Image */}
-      {item.photo_url ? (
+      {currentItem.photo_url ? (
         <img
-          src={item.photo_url}
-          alt={item.name}
+          src={currentItem.photo_url}
+          alt={currentItem.name}
           className="mt-2 h-24 w-full rounded border object-cover"
         />
       ) : (
@@ -198,7 +220,7 @@ export default function ItemCard({
                 Cancel
               </Button>
               <Button onClick={onSave} disabled={uploading}>
-                {uploading ? "Saving…" : "Save"}
+                {uploading ? "Saving..." : "Save"}
               </Button>
             </div>
           </DialogContent>

@@ -13,18 +13,19 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, HelpCircle } from "lucide-react";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 
 import {
-  getCollaborators,
+  getCollaboratorsWithInfo,
   addCollaborator,
   removeCollaborator,
 } from "@/supabase/queries/collaborators";
-import type { Collaborator } from "@/supabase/types";
+import type { CollaboratorInfo } from "@/supabase/types";
 
 export default function CollaboratorsSection({ boxId }: { boxId: string }) {
   const session = useSession();
-  const [collaborators, setCollaborators] = useState<Collaborator[] | null>(
+  const [collaborators, setCollaborators] = useState<CollaboratorInfo[] | null>(
     null,
   );
   const [newId, setNewId] = useState("");
@@ -34,13 +35,13 @@ export default function CollaboratorsSection({ boxId }: { boxId: string }) {
   // load on mount
   useEffect(() => {
     if (!boxId) return;
-    getCollaborators(boxId)
+    getCollaboratorsWithInfo(boxId)
       .then(setCollaborators)
-      .catch((err) => toast.error("Failed to load collaborators."));
+      .catch(() => toast.error("Failed to load collaborators."));
   }, [boxId]);
 
   const refresh = () =>
-    getCollaborators(boxId)
+    getCollaboratorsWithInfo(boxId)
       .then(setCollaborators)
       .catch(() => toast.error("Failed to refresh."));
 
@@ -74,9 +75,35 @@ export default function CollaboratorsSection({ boxId }: { boxId: string }) {
   return (
     <Card className="mx-auto max-w-lg">
       <CardHeader>
-        <CardTitle>Collaborators</CardTitle>
+        <div className="flex items-center justify-between w-full">
+          <CardTitle>Collaborators</CardTitle>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Help">
+                <HelpCircle className="h-5 w-5" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-sm space-y-4">
+              <p>
+                To invite a friend: 🚀
+                <ol className="list-decimal list-inside ml-2">
+                  <li>
+                    Ask them to click the profile icon at the top‑right of the
+                    screen and select “Profile.”
+                  </li>
+                  <li>
+                    On their Profile page, click “Copy Profile ID,” or use the
+                    email/share buttons to send their ID.
+                  </li>
+                  <li>Paste their Profile ID here and click “Add.”</li>
+                </ol>
+                Enjoy collaborating on your boxes together! ✨
+              </p>
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-2">
         {collaborators === null ? (
           <p>Loading...</p>
         ) : collaborators.length === 0 ? (
@@ -85,16 +112,20 @@ export default function CollaboratorsSection({ boxId }: { boxId: string }) {
           <ul className="space-y-2">
             {collaborators.map((c) => (
               <li
-                key={c.collaborator_profile_id}
+                key={c.id}
                 className="flex items-center justify-between rounded border border-border p-2"
               >
-                <span className="truncate">{c.collaborator_profile_id}</span>
-                <span className="px-2 text-xs font-medium">{c.role}</span>
+                <div className="truncate">
+                  <span className="font-medium">{c.name || c.id}</span>{" "}
+                  <span className="text-sm text-muted-foreground">
+                    &lt;{c.email || c.id}&gt;
+                  </span>
+                </div>
                 <Button
                   variant="ghost"
                   size="icon"
                   aria-label="Remove"
-                  onClick={() => onRemove(c.collaborator_profile_id)}
+                  onClick={() => onRemove(c.id)}
                 >
                   <X className="h-4 w-4 text-red-500" />
                 </Button>

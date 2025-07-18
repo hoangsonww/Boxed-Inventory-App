@@ -1,31 +1,45 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import {
+  useSessionContext,
+  useSupabaseClient,
+} from "@supabase/auth-helpers-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { getProfile, upsertProfile } from "@/supabase/queries/profiles";
 import type { Profile, NewProfile } from "@/supabase/types";
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import Head from "next/head";
+import dayjs from "dayjs";
+import {
+  Camera,
+  Check,
+  X,
+  Pencil,
+  ChevronLeft,
+  Clipboard,
+  Mail,
+  Share2,
+} from "lucide-react";
+
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Camera, Check, X, Pencil } from "lucide-react";
-import dayjs from "dayjs";
-import Head from "next/head";
 
 export default function ProfilePage() {
-  const session = useSession();
+  const { session, isLoading: authLoading } = useSessionContext();
   const supabase = useSupabaseClient();
   const router = useRouter();
   const userId = session?.user.id;
 
+  // Redirect to login if not authenticated
   useEffect(() => {
-    if (session === null) {
+    if (!authLoading && !session) {
       router.push("/login");
     }
-  }, [session, router]);
+  }, [authLoading, session, router]);
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -86,41 +100,90 @@ export default function ProfilePage() {
     fileInputRef.current?.click();
   };
 
-  // Upload avatar handler
+  // Upload avatar handler (fixed to always re-fetch on error and update UI)
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!profile) return;
     const file = e.target.files?.[0];
     if (!file) return;
+
     setUploadingAvatar(true);
-    const ext = file.name.split(".").pop();
-    const filePath = `avatars/${profile.id}/${Date.now()}.${ext}`;
-    const { error: uploadErr } = await supabase.storage
-      .from("avatars")
-      .upload(filePath, file, { upsert: true });
-    if (uploadErr) {
-      toast.error("Upload failed.");
-      setUploadingAvatar(false);
-      return;
-    }
-    const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
     try {
+      // upload to storage
+      const ext = file.name.split(".").pop();
+      const filePath = `avatars/${profile.id}/${Date.now()}.${ext}`;
+      const { error: uploadErr } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+
+      // get public URL
+      const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
+
+      // upsert profile with new avatar_url
       const updated = await upsertProfile({
         id: profile.id,
         username: profile.username ?? undefined,
         avatar_url: data.publicUrl,
       });
+
       setProfile(updated);
       toast.success("Avatar updated.");
-    } catch {
-      toast.error("Failed to save avatar.");
+    } catch (err) {
+      console.error("Avatar update error:", err);
+      // attempt to re-fetch to reflect any successful change
+      try {
+        const fresh = await getProfile(profile.id);
+        setProfile(fresh);
+        toast.success("Avatar updated.");
+      } catch {
+        toast.error("Failed to update avatar.");
+      }
     } finally {
       setUploadingAvatar(false);
     }
   };
 
-  if (!session) {
-    return null;
-  }
+  // Copy profile ID to clipboard
+  const copyProfileId = async () => {
+    if (!userId) return;
+    try {
+      await navigator.clipboard.writeText(userId);
+      toast.success("Profile ID copied to clipboard.");
+    } catch {
+      toast.error("Failed to copy ID.");
+    }
+  };
+
+  // Share profile via native share if available
+  const shareProfile = async () => {
+    if (!userId) return;
+    const shareUrl = `${window.location.origin}/profile/${userId}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "My Boxed Profile",
+          text: "Check out my profile!",
+          url: shareUrl,
+        });
+      } catch {
+        toast.error("Share cancelled or failed.");
+      }
+    } else {
+      toast.error("Native share not supported.");
+    }
+  };
+
+  // Share profile via email
+  const emailProfile = () => {
+    if (!userId) return;
+    const subject = encodeURIComponent("My Boxed Profile");
+    const body = encodeURIComponent(
+      `Here’s my profile link:\n\n${window.location.origin}/profile/${userId}`,
+    );
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  };
+
+  if (!session) return null;
 
   if (loading) {
     return (
@@ -248,6 +311,31 @@ export default function ProfilePage() {
             </p>
           </CardContent>
         </Card>
+
+        {/* Share / Copy Controls */}
+        <div className="flex gap-2 justify-center">
+          <Button variant="outline" onClick={copyProfileId}>
+            <Clipboard size={16} className="mr-1" />
+            Copy Profile ID
+          </Button>
+          <Button variant="outline" onClick={emailProfile}>
+            <Mail size={16} className="mr-1" />
+            Share via Email
+          </Button>
+          <Button variant="outline" onClick={shareProfile}>
+            <Share2 size={16} className="mr-1" />
+            Open Share Dialog
+          </Button>
+        </div>
+
+        <Button
+          variant="ghost"
+          className="w-full"
+          onClick={() => router.push("/dashboard")}
+        >
+          <ChevronLeft className="h-4 w-4 mr-1" />
+          Back to Boxes
+        </Button>
       </div>
     </>
   );

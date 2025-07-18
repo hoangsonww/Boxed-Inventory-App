@@ -1,8 +1,12 @@
 "use client";
 
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useSession,
+  useSessionContext,
+  useSupabaseClient,
+} from "@supabase/auth-helpers-react";
 
 import { toast } from "sonner";
 
@@ -41,6 +45,7 @@ import {
   Trash2,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
 } from "lucide-react";
 import CollaboratorsSection from "@/components/CollaboratorsSection";
 import AddItemCard from "@/components/AddItemCard";
@@ -407,15 +412,15 @@ export default function BoxDetailPage() {
   const { query } = useRouter();
   const boxId = query.id as string | undefined;
 
-  const session = useSession();
+  const { session, isLoading: authLoading } = useSessionContext();
   const router = useRouter();
   const supabase = useSupabaseClient();
 
   useEffect(() => {
-    if (session === null) {
+    if (!authLoading && !session) {
       router.push("/login");
     }
-  }, [session, router]);
+  }, [authLoading, session, router]);
 
   const [box, setBox] = useState<Box | null>(null);
   const [items, setItems] = useState<Item[]>([]);
@@ -752,11 +757,9 @@ export default function BoxDetailPage() {
 
         {/* side‑by‑side grid */}
         <div className="mx-auto max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-          {isOwner && (
-            <div className="w-full">
-              <AddItemCard boxId={box.id} onItemAdded={() => loadAll(box.id)} />
-            </div>
-          )}
+          <div className="w-full">
+            <AddItemCard boxId={box.id} onItemAdded={() => loadAll(box.id)} />
+          </div>
           <div className="w-full">
             <CollaboratorsSection boxId={box.id} />
           </div>
@@ -833,6 +836,15 @@ export default function BoxDetailPage() {
             </CardContent>
           )}
         </Card>
+
+        <Button
+          variant="ghost"
+          className="w-full"
+          onClick={() => router.push("/dashboard")}
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Back to Boxes
+        </Button>
 
         <style jsx global>{`
           [data-rfd-drag-handle] {

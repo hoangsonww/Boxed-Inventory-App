@@ -134,7 +134,7 @@ export default function Chatbot() {
 
       if (boxes.length > MAX_BOXES)
         parts.push(
-          `… (truncated; ${boxes.length - MAX_BOXES} more boxes not listed)`,
+          `... (truncated; ${boxes.length - MAX_BOXES} more boxes not listed)`,
         );
 
       const ctx = parts.join("\n");
@@ -323,7 +323,7 @@ export default function Chatbot() {
                 {!contextReady && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Loading your inventory…
+                    Loading your inventory...
                   </div>
                 )}
 
@@ -380,7 +380,7 @@ export default function Chatbot() {
                 {loading && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Thinking…
+                    Thinking...
                   </div>
                 )}
 
@@ -394,7 +394,7 @@ export default function Chatbot() {
             <div className="flex items-end gap-2">
               <Textarea
                 placeholder={
-                  contextReady ? "Type your message…" : "Loading inventory…"
+                  contextReady ? "Type your message..." : "Loading inventory..."
                 }
                 className="resize-none h-20 text-sm"
                 disabled={loading || !contextReady}

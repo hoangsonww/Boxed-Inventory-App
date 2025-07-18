@@ -2,14 +2,14 @@
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
-import { useSession } from "@supabase/auth-helpers-react";
+import { useSession, useSessionContext } from "@supabase/auth-helpers-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { ChevronLeft, Loader2 } from "lucide-react";
 import {
   Form,
   FormField,
@@ -48,13 +48,13 @@ type BoxFormValues = z.infer<typeof boxSchema>;
 
 export default function NewBoxPage() {
   const router = useRouter();
-  const session = useSession();
+  const { session, isLoading: authLoading } = useSessionContext();
 
   useEffect(() => {
-    if (session === null) {
+    if (!authLoading && !session) {
       router.push("/login");
     }
-  }, [session, router]);
+  }, [authLoading, session, router]);
 
   const form = useForm<BoxFormValues>({
     resolver: zodResolver(boxSchema),
@@ -205,6 +205,15 @@ export default function NewBoxPage() {
             </form>
           </Form>
         </Card>
+
+        <Button
+          variant="ghost"
+          className="mt-4 w-full"
+          onClick={() => router.push("/dashboard")}
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Back to Boxes
+        </Button>
       </div>
     </>
   );
