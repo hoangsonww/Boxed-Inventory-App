@@ -1,6 +1,6 @@
 # 📦 **Boxed - Your Smart Home Inventory, Packing & Retrieval Assistant**
 
-**Boxed** helps you *actually know* where your stuff is. Create boxes, drop items in, add photos, tag types, collaborators, mark packed status, search instantly – then ask **BoxedAI** *“Where’s my winter jacket?”* and get an answer sourced from your real inventory.
+**Boxed** helps you _actually know_ where your stuff is. Create boxes, drop items in, add photos, tag types, collaborators, mark packed status, search instantly – then ask **BoxedAI** _“Where’s my winter jacket?”_ and get an answer sourced from your real inventory.
 
 **Think “Notion for your physical belongings” with an AI locator + packing coach.**
 
@@ -11,22 +11,22 @@
 > [!IMPORTANT]
 > Born out of the frustration of moving & forgetting which box had **that one cable**. Now, **Boxed** keeps every item queryable & context‑aware.
 
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square\&logo=typescript\&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square\&logo=nextdotjs\&logoColor=white)
-![React](https://img.shields.io/badge/React-61DAFB?style=flat-square\&logo=react\&logoColor=black)
-![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square\&logo=supabase\&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square\&logo=postgresql\&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-38B2AC?style=flat-square\&logo=tailwindcss\&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-38B2AC?style=flat-square&logo=tailwindcss&logoColor=white)
 ![Shadcn UI](https://img.shields.io/badge/Shadcn_UI-889889?style=flat-square)
 ![Dnd Kit](https://img.shields.io/badge/DnD_Kit-000?style=flat-square)
 ![Lucide](https://img.shields.io/badge/Lucide-18181B?style=flat-square)
-![Google AI](https://img.shields.io/badge/Google_Gemini-4285F4?style=flat-square\&logo=google\&logoColor=white)
+![Google AI](https://img.shields.io/badge/Google_Gemini-4285F4?style=flat-square&logo=google&logoColor=white)
 ![Zod](https://img.shields.io/badge/Zod-3068B7?style=flat-square)
 ![Day.js](https://img.shields.io/badge/Day.js-FF5D01?style=flat-square)
-![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=flat-square\&logo=framer\&logoColor=white)
-![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=flat-square\&logo=eslint\&logoColor=white)
-![Prettier](https://img.shields.io/badge/Prettier-F7B93E?style=flat-square\&logo=prettier\&logoColor=black)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square\&logo=vercel\&logoColor=white)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=flat-square&logo=framer&logoColor=white)
+![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=flat-square&logo=eslint&logoColor=white)
+![Prettier](https://img.shields.io/badge/Prettier-F7B93E?style=flat-square&logo=prettier&logoColor=black)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
 
 ---
 
@@ -54,14 +54,14 @@
 ## 🪄 About Boxed
 
 Boxed is a **personal / household inventory & packing assistant** built on top of Supabase (auth, Postgres, storage) + a modern Next.js frontend.
-It aims to eliminate: *“Which box has the charger?”*, *“Did I already pack those mugs?”*, *“Where did I put winter clothes?”*.
+It aims to eliminate: _“Which box has the charger?”_, _“Did I already pack those mugs?”_, _“Where did I put winter clothes?”_.
 
 Use it while:
 
-* Moving apartments
-* Seasonal storage (winter vs. summer)
-* Gear management (photography, hobby, tools)
-* Shared spaces (roommates / family / team kit)
+- Moving apartments
+- Seasonal storage (winter vs. summer)
+- Gear management (photography, hobby, tools)
+- Shared spaces (roommates / family / team kit)
 
 All these features are designed to make the lives of movers, families, and especially college students easier, as I have been there myself - I often lost track of my belongings during moves and relocations, and I wish I had a tool like Boxed back then...
 
@@ -75,7 +75,7 @@ Boxed is built with a focus on **simplicity**, **usability**, and **AI-powered a
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
 | **Boxes**          | Create, rename inline, photo (upload/change/remove), set location, status (`packed` / `unpacked`), drag-to-reorder persistently |
 | **Items**          | Add per box, quantity, optional photo, type classification, edit inline via modal (name/qty/photo)                              |
-| **Types**          | Item types (e.g. *Clothing, Cables, Kitchen*) with pill color cycling                                                           |
+| **Types**          | Item types (e.g. _Clothing, Cables, Kitchen_) with pill color cycling                                                           |
 | **Collaborators**  | Share access (data model prepared with `box_collaborators`)                                                                     |
 | **Search**         | Debounced global item search with box context + empty & loading states                                                          |
 | **Inline Editing** | Box name & location directly editable (shadcn + custom EditableText)                                                            |
@@ -87,7 +87,7 @@ Boxed is built with a focus on **simplicity**, **usability**, and **AI-powered a
 | **Dark / Light**   | Theme toggle integrated with tokenized OKLCH palette                                                                            |
 | **Persistence**    | Drag order per user stored in `localStorage`                                                                                    |
 | **Performance**    | Prompt-limited context generation, truncated lists for AI context                                                               |
-| **AI Assistant**   | *BoxedAI* chat bubble → inventory-aware retrieval & packing guidance                                                            |
+| **AI Assistant**   | _BoxedAI_ chat bubble → inventory-aware retrieval & packing guidance                                                            |
 
 ---
 
@@ -125,13 +125,13 @@ Boxed is built with a focus on **simplicity**, **usability**, and **AI-powered a
 
 ## 🖥 UI / UX Highlights
 
-* **Inventory Dashboard**: Drag re-order with handle hover (opacity reveal) – persists user order client-side.
-* **Box Hero Header**: Gradient overlay + inline editable text + status pill + photo controls + tooltip for destructive photo removal.
-* **ItemCard**: Photo / placeholder, quantity, relative “last used”, type pill, bottom-right edit pencil leading to modal.
-* **Item Edit Modal**: Name / quantity / photo choose → upload to bucket → optimistic closure.
-* **Chat Button**: Fixed mid-left, minimal friction; opens AI Dialog (shadcn `Dialog`).
-* **Chat Dialog**: ScrollArea, Markdown bubbles, shift+enter newline, Enter send, inventory loading indicator.
-* **Export CSV**: Flattened structure ready for spreadsheets or offline backup.
+- **Inventory Dashboard**: Drag re-order with handle hover (opacity reveal) – persists user order client-side.
+- **Box Hero Header**: Gradient overlay + inline editable text + status pill + photo controls + tooltip for destructive photo removal.
+- **ItemCard**: Photo / placeholder, quantity, relative “last used”, type pill, bottom-right edit pencil leading to modal.
+- **Item Edit Modal**: Name / quantity / photo choose → upload to bucket → optimistic closure.
+- **Chat Button**: Fixed mid-left, minimal friction; opens AI Dialog (shadcn `Dialog`).
+- **Chat Dialog**: ScrollArea, Markdown bubbles, shift+enter newline, Enter send, inventory loading indicator.
+- **Export CSV**: Flattened structure ready for spreadsheets or offline backup.
 
 ---
 
@@ -146,7 +146,7 @@ Boxed is built with a focus on **simplicity**, **usability**, and **AI-powered a
 | `items`                     | `id uuid PK`, `box_id FK`, `type_id FK?`, `name`, `quantity int`, `photo_url`, `last_used (timestamp)`, `created_at` | Belongs to a box                  |
 | `item_types`                | `id serial PK`, `name`                                                                                               | For classification pills          |
 | `box_collaborators`         | `box_id FK`, `collaborator_profile_id FK`, `role`                                                                    | Multi-user future features        |
-| *(optional)* `activity_log` | `id`, `actor_id`, `entity_type`, `entity_id`, `action`, `ts`                                                         | For future auditing               |
+| _(optional)_ `activity_log` | `id`, `actor_id`, `entity_type`, `entity_id`, `action`, `ts`                                                         | For future auditing               |
 
 **Indexes you should have (recommended):**
 
@@ -173,6 +173,7 @@ The AI context builder:
    ```
    Box: "Kitchen Essentials" (id:abc) status:packed loc:Pantry items:5 => Plates (qty 8), Glasses (qty 6), ...
    ```
+
 6. Caches (`localStorage`) for 60s to avoid re-pulling on every chat open.
 7. Supplies to Gemini system instruction: no hallucination, clarification if missing.
 
@@ -207,8 +208,8 @@ supabase start
 
 ## 🔐 Environment Variables
 
-| Var                             | Required        | Description                                |
-| ------------------------------- | --------------- | ------------------------------------------ |
+| Var                             | Required         | Description                                |
+| ------------------------------- | ---------------- | ------------------------------------------ |
 | `NEXT_PUBLIC_SUPABASE_URL`      | ✅               | Supabase project URL                       |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅               | Public anon key                            |
 | `NEXT_PUBLIC_GOOGLE_AI_API_KEY` | ✅               | Google Gemini API key                      |
@@ -229,7 +230,7 @@ supabase start
 | `typecheck` | TS project references check |
 | `format`    | Prettier write              |
 
-*(Adjust depending on your actual `package.json`.)*
+_(Adjust depending on your actual `package.json`.)_
 
 ---
 
@@ -269,11 +270,11 @@ CSV generation is **client-side** (no server round trip) → uses `Blob` + `URL.
 
 | Status | Feature                                         |
 | ------ | ----------------------------------------------- |
-| ✅      | Box / item CRUD + photos                        |
-| ✅      | Live search (debounced)                         |
-| ✅      | Drag reorder persist                            |
-| ✅      | BoxedAI context + chat                          |
-| ✅      | CSV export                                      |
+| ✅     | Box / item CRUD + photos                        |
+| ✅     | Live search (debounced)                         |
+| ✅     | Drag reorder persist                            |
+| ✅     | BoxedAI context + chat                          |
+| ✅     | CSV export                                      |
 | 🔜     | Bulk item import (CSV → items)                  |
 | 🔜     | True collaborator permissions (viewer / editor) |
 | 🔜     | Activity timeline (moves, edits, deletions)     |
@@ -309,12 +310,12 @@ Attribution appreciated. Do not misrepresent generated BoxedAI responses as guar
 
 Built with ☕ + chaotic moving experiences by **Son Nguyen**.
 
-* GitHub: [@hoangsonww](https://github.com/hoangsonww)
-* LinkedIn: [linkedin.com/in/hoangsonw](https://www.linkedin.com/in/hoangsonw)
-* Email: [hoangson091104@gmail.com](mailto:hoangson091104@gmail.com)
+- GitHub: [@hoangsonww](https://github.com/hoangsonww)
+- LinkedIn: [linkedin.com/in/hoangsonw](https://www.linkedin.com/in/hoangsonw)
+- Email: [hoangson091104@gmail.com](mailto:hoangson091104@gmail.com)
 
 > \[!NOTE]
-> *“Find. Pack. Ask. Relax.” – Boxed tagline*
+> _“Find. Pack. Ask. Relax.” – Boxed tagline_
 
 ---
 

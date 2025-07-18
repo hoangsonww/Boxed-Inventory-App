@@ -287,7 +287,9 @@ export default function Landing() {
 
         {/*──────── Use‑cases ────────*/}
         <section className="w-full max-w-7xl px-4">
-          <h2 className="mb-8 text-center text-3xl font-bold">Perfect for...</h2>
+          <h2 className="mb-8 text-center text-3xl font-bold">
+            Perfect for...
+          </h2>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {useCases.map((c) => (
               <div

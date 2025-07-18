@@ -104,9 +104,7 @@ export default function Chatbot() {
       const MAX_ITEMS_PER_BOX = 25;
 
       const parts: string[] = [];
-      parts.push(
-        `Total boxes: ${boxes.length}. Total items: ${items.length}.`
-      );
+      parts.push(`Total boxes: ${boxes.length}. Total items: ${items.length}.`);
 
       boxes.slice(0, MAX_BOXES).forEach((b) => {
         const its = (itemsByBox[b.id] || []).slice(0, MAX_ITEMS_PER_BOX);
@@ -116,7 +114,7 @@ export default function Chatbot() {
             (it) =>
               `${it.name}${it.quantity ? ` (qty ${it.quantity})` : ""}${
                 it.photo_url ? "[img]" : ""
-              }`
+              }`,
           )
           .join(", ");
 
@@ -130,22 +128,22 @@ export default function Chatbot() {
           }${its.length ? ` => ${itemSumm}` : ""}${
             collabs.length
               ? ` collaborators:${collabs
-                .map((c) => `${c.collaborator_profile_id}(${c.role})`)
-                .join(";")}`
+                  .map((c) => `${c.collaborator_profile_id}(${c.role})`)
+                  .join(";")}`
               : ""
-          }`
+          }`,
         );
       });
 
       if (boxes.length > MAX_BOXES)
         parts.push(
-          `… (truncated; ${boxes.length - MAX_BOXES} more boxes not listed)`
+          `… (truncated; ${boxes.length - MAX_BOXES} more boxes not listed)`,
         );
 
       const ctx = parts.join("\n");
       return ctx.slice(0, 16_000); // final safety cutoff
     },
-    []
+    [],
   );
 
   const fetchInventoryContext = useCallback(async () => {
@@ -214,7 +212,7 @@ export default function Chatbot() {
     const summary = summarizeInventory(
       (boxesData as BoxRow[]) || [],
       itemsData,
-      collabsData
+      collabsData,
     );
     setContextSummary(summary);
     setContextReady(true);
@@ -222,7 +220,7 @@ export default function Chatbot() {
     try {
       localStorage.setItem(
         INVENTORY_CACHE_KEY,
-        JSON.stringify({ t: Date.now(), summary })
+        JSON.stringify({ t: Date.now(), summary }),
       );
     } catch {
       /* ignore */
@@ -303,13 +301,9 @@ export default function Chatbot() {
           </Button>
         </DialogTrigger>
 
-        <DialogContent
-          className="sm:max-w-lg p-0 overflow-hidden bg-card"
-        >
+        <DialogContent className="sm:max-w-lg p-0 overflow-hidden bg-card">
           <DialogHeader className="px-5 pt-5 pb-3 border-b bg-card/70 backdrop-blur">
-            <DialogTitle className="text-lg font-semibold">
-              BoxedAI
-            </DialogTitle>
+            <DialogTitle className="text-lg font-semibold">BoxedAI</DialogTitle>
             <DialogDescription className="text-xs leading-relaxed">
               Ask about your items, where something is, or get packing tips.
             </DialogDescription>
@@ -325,7 +319,8 @@ export default function Chatbot() {
                       <MessageSquare className="h-8 w-8" />
                     </div>
                     <p className="text-center text-muted-foreground">
-                      Start a conversation! For example, try: “Where is my winter jacket?”
+                      Start a conversation! For example, try: “Where is my
+                      winter jacket?”
                     </p>
                   </>
                 )}
@@ -404,9 +399,7 @@ export default function Chatbot() {
             <div className="flex items-end gap-2">
               <Textarea
                 placeholder={
-                  contextReady
-                    ? "Type your message…"
-                    : "Loading inventory…"
+                  contextReady ? "Type your message…" : "Loading inventory…"
                 }
                 className="resize-none h-20 text-sm"
                 disabled={loading || !contextReady}
@@ -440,8 +433,8 @@ export default function Chatbot() {
                 Clear
               </Button>
               <span className="text-[10px] text-muted-foreground">
-                  Press Enter to send · Press Shift + Enter to add a newline
-                </span>
+                Press Enter to send · Press Shift + Enter to add a newline
+              </span>
             </div>
           </div>
 

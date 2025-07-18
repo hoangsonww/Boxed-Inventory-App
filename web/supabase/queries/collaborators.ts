@@ -24,8 +24,8 @@ export const addCollaborator = async (
   const { data, error } = await supabase
     .from("box_collaborators")
     .insert({ box_id: boxId, collaborator_profile_id: collaboratorId, role })
-    .select("*")      // ← ensure the inserted row is returned
-    .single();        // ← return a single record
+    .select("*") // ← ensure the inserted row is returned
+    .single(); // ← return a single record
 
   if (error) throw error;
   return collaboratorSchema.parse(data);

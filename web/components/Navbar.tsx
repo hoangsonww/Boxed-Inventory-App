@@ -143,11 +143,7 @@ export default function Navbar() {
                 <Menu className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              sideOffset={8}
-              className="w-52"
-            >
+            <DropdownMenuContent align="end" sideOffset={8} className="w-52">
               {session ? (
                 <>
                   <DropdownMenuItem asChild>

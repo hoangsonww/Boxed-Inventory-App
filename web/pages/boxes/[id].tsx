@@ -22,7 +22,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ItemCard from "@/components/ItemCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import {
   PlusCircle,
   Image as ImageIcon,
@@ -261,16 +266,16 @@ function SortableItem({ id, item, type }: SortableItemProps) {
   Box Hero (photo + meta) – looks like a box
 ──────────────────────────────────────────────────────────*/
 export function BoxHero({
-                          box,
-                          isOwner,
-                          onUploadClick,
-                          onRemovePhoto,
-                          onTogglePacked,
-                          onRename,
-                          onRelocate,
-                          totalItems,
-                          totalQty,
-                        }: {
+  box,
+  isOwner,
+  onUploadClick,
+  onRemovePhoto,
+  onTogglePacked,
+  onRename,
+  onRelocate,
+  totalItems,
+  totalQty,
+}: {
   box: Box;
   isOwner: boolean;
   onUploadClick: () => void;
@@ -311,7 +316,11 @@ export function BoxHero({
                     <Camera className="mr-1 h-4 w-4" /> Add photo
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent side="bottom" align="center" sideOffset={4}>
+                <DropdownMenuContent
+                  side="bottom"
+                  align="center"
+                  sideOffset={4}
+                >
                   <DropdownMenuItem onClick={onUploadClick}>
                     Add photo...
                   </DropdownMenuItem>
@@ -396,9 +405,7 @@ export function BoxHero({
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="top">
-                    Remove photo
-                  </TooltipContent>
+                  <TooltipContent side="top">Remove photo</TooltipContent>
                 </Tooltip>
               </>
             )}

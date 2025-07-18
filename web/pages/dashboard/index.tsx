@@ -84,7 +84,7 @@ export default function Dashboard() {
   const [exporting, setExporting] = useState(false);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
   );
   const LOCALSTORAGE_KEY = `dashboard-box-order-${userId}`;
 
@@ -162,7 +162,7 @@ export default function Dashboard() {
               item_name: it.name,
               item_quantity: it.quantity ?? 0,
               item_photo_url: it.photo_url ?? "",
-            })
+            }),
           );
         } else {
           rows.push({
@@ -191,9 +191,7 @@ export default function Dashboard() {
       const csv = [
         header.join(","),
         ...rows.map((r) =>
-          header
-            .map((h) => `"${String(r[h]).replace(/"/g, '""')}"`)
-            .join(",")
+          header.map((h) => `"${String(r[h]).replace(/"/g, '""')}"`).join(","),
         ),
       ].join("\n");
 

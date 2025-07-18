@@ -16,11 +16,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-} from "@/components/ui/dialog";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 
 dayjs.extend(relativeTime);
 
@@ -34,11 +30,11 @@ const TYPE_COLOR_CLASSES = [
 ];
 
 export default function ItemCard({
-                                   item,
-                                   type,
-                                   showBox = false,
-                                   box,
-                                 }: {
+  item,
+  type,
+  showBox = false,
+  box,
+}: {
   item: Item;
   type?: ItemType;
   showBox?: boolean;
