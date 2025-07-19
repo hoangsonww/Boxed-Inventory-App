@@ -1,0 +1,37 @@
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Ensure build essentials are installed
+  apt:
+    name:
+      - build-essential
+      - git
+      - curl
+      - python3-venv
+      - python3-pip
+    state: present
+
+- name: Install Node.js {{ node_version }}
+  shell: |
+    curl -fsSL https://deb.nodesource.com/setup_{{ node_version }} | bash -
+    apt-get install -y nodejs
+  args:
+    creates: /usr/bin/node
+
+- name: Install pm2 globally
+  npm:
+    name: pm2
+    global: yes
+    state: present
+
+- name: Ensure nginx is installed
+  apt:
+    name: nginx
+    state: present
+
+- name: Ensure nginx is running
+  service:
+    name: nginx
+    state: started
+    enabled: yes

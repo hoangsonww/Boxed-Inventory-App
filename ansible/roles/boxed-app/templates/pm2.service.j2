@@ -1,0 +1,13 @@
+[Unit]
+Description=PM2 process manager for Boxed app (user {{ app_user }})
+After=network.target
+
+[Service]
+Type=simple
+User={{ app_user }}
+WorkingDirectory={{ app_home }}
+ExecStart=/usr/bin/pm2-runtime start npm -- start
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

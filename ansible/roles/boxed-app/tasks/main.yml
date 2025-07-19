@@ -1,0 +1,83 @@
+- name: Ensure app user exists
+  user:
+    name: "{{ app_user }}"
+    shell: /bin/bash
+    create_home: yes
+
+- name: Create app directory
+  file:
+    path: "{{ app_home }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+
+- name: Clone repository
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ app_home }}"
+    version: "{{ branch }}"
+    force: yes
+    update: yes
+  become_user: "{{ app_user }}"
+
+- name: Copy environment file
+  copy:
+    dest: "{{ app_home }}/.env.production"
+    content: |
+      NEXT_PUBLIC_GOOGLE_AI_API_KEY={{ lookup('env','NEXT_PUBLIC_GOOGLE_AI_API_KEY') }}
+      DATABASE_URL={{ lookup('env','DATABASE_URL') }}
+      # add other variables as needed
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: '0600'
+
+- name: Install npm dependencies
+  npm:
+    path: "{{ app_home }}"
+    production: yes
+  become_user: "{{ app_user }}"
+
+- name: Build the Next.js app
+  npm:
+    path: "{{ app_home }}"
+    executable: npm
+    args: run build
+  become_user: "{{ app_user }}"
+
+- name: Generate pm2 service definition
+  template:
+    src: pm2.service.j2
+    dest: /etc/systemd/system/pm2-{{ app_user }}.service
+    mode: '0644'
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start pm2 service
+  systemd:
+    name: pm2-{{ app_user }}.service
+    state: started
+    enabled: yes
+
+- name: Configure nginx
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/boxed.conf
+    mode: '0644'
+
+- name: Enable nginx site
+  file:
+    src: /etc/nginx/sites-available/boxed.conf
+    dest: /etc/nginx/sites-enabled/boxed.conf
+    state: link
+
+- name: Disable default nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Reload nginx
+  service:
+    name: nginx
+    state: reloaded

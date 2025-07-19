@@ -1,0 +1,26 @@
+server {
+    listen 80;
+    server_name {{ domain_name }};
+
+    location /_next/static/ {
+        alias {{ app_home }}/.next/static/;
+        access_log off;
+        expires max;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:{{ listen_port }};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # optional: serve favicon
+    location = /favicon.ico {
+        alias {{ app_home }}/public/favicon.ico;
+        access_log off;
+        log_not_found off;
+    }
+}

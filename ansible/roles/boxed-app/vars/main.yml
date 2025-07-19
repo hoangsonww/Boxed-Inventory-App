@@ -1,0 +1,7 @@
+app_user: "boxed"
+app_home: "/home/{{ app_user }}/app"
+repo_url: "https://github.com/yourusername/boxed.git"
+branch: "main"
+node_env: "production"
+listen_port: 3000
+domain_name: "example.com"    # adjust to your domain or public IP

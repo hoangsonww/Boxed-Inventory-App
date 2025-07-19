@@ -214,7 +214,7 @@ jobs:
         run: npx artillery quick --count 20 -n 50 http://localhost:5000/health || true
 
   # ────────────────────────────────────────────────────────────────
-  #  🚀 7. Deploy (AWS CDK + Ansible)                              #
+  #  🚀 7. Deploy                                                  #
   # ────────────────────────────────────────────────────────────────
   deploy:
     name: "🚀 Deploy (AWS CDK + Ansible)"
@@ -263,7 +263,7 @@ jobs:
             echo "| --------------------- | ------------------------------------------------------ |"
             echo "| **Live Web App**      | [https://boxed.vercel.app](https://boxed.vercel.app) |"
             echo "| **Container Image**   | `ghcr.io/${{ github.repository_owner }}/boxed:${{ github.sha }}` |"
-            echo "| **AWS Deployment**    | Completed via AWS CDK & Ansible                        |"
+            echo "| **AWS Deployment**    | Completed via AWS & Vercel                              |"
             echo ""
             echo "**Completed at** $(date -u +"%Y-%m-%dT%H:%M:%SZ") UTC"
           } >> $GITHUB_STEP_SUMMARY

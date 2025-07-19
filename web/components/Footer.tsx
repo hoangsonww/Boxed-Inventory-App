@@ -24,7 +24,7 @@ export default function Footer() {
         {/* Social Icons */}
         <div className="flex items-center gap-6">
           <Link
-            href="https://github.com/sonnguyenhoang"
+            href="https://github.com/hoangsonww"
             target="_blank"
             rel="noopener noreferrer"
             className="group text-muted-foreground transition"
@@ -33,7 +33,7 @@ export default function Footer() {
             <Github className="h-5 w-5 group-hover:text-primary transition-colors" />
           </Link>
           <Link
-            href="https://linkedin.com/in/sonnguyenhoang"
+            href="https://linkedin.com/in/hoangsonw"
             target="_blank"
             rel="noopener noreferrer"
             className="group text-muted-foreground transition"

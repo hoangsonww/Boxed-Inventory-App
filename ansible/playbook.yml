@@ -1,0 +1,5 @@
+- hosts: web
+  become: yes
+  roles:
+    - common
+    - boxed-app
