@@ -2,7 +2,7 @@
 
 _Last updated: May 16, 2025_
 
-This document describes the security vulnerability disclosure process for the **Urlvy** project. It covers supported versions, reporting guidelines, response commitments, and safe-harbor protections for security researchers.
+This document describes the security vulnerability disclosure process for the **Boxed** project. It covers supported versions, reporting guidelines, response commitments, and safe-harbor protections for security researchers.
 
 ---
 
@@ -70,7 +70,7 @@ We welcome and appreciate good-faith security research. As long as you:
 - Do not degrade the service for other users.
 - Promptly report any issues you find to us.
 
-—you will not face legal action from the Urlvy team.
+—you will not face legal action from the Boxed team.
 
 ---
 

@@ -1,4 +1,4 @@
-# Contributing to Urlvy
+# Contributing to Boxed
 
 Thanks for your interest in contributing! Please take a moment to read this guide.
 
@@ -7,8 +7,8 @@ Thanks for your interest in contributing! Please take a moment to read this guid
 1. Fork the repository and clone your fork (adjust the URL to your fork as needed):
 
    ```bash
-   git clone <git@github.com:your-username/Urlvy.git>
-   cd Urlvy
+   git clone <git@github.com:your-username/Boxed.git>
+   cd Boxed
    ```
 
 2. Install dependencies:
