@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+        xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+>
+    <!-- Homepage -->
+    <url>
+        <loc>https://boxed.app/</loc>
+        <lastmod>2025-07-20</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <!-- Inventory (requires login) -->
+    <url>
+        <loc>https://boxed.app/dashboard</loc>
+        <lastmod>2025-07-20</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Auth pages -->
+    <url>
+        <loc>https://boxed.app/profile</loc>
+        <lastmod>2025-07-20</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://boxed.app/login</loc>
+        <lastmod>2025-07-20</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://boxed.app/register</loc>
+        <lastmod>2025-07-20</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+</urlset>
