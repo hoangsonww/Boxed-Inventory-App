@@ -450,7 +450,7 @@ To facilitate this, we provide a Terraform configuration that sets up the necess
 - **ECR**: For container registry
 - **ECS**: For container orchestration
 
-This setup allows you to run Boxed in a production environment with minimal effort. You can find the Terraform configuration in the `aws` directory of the repository.
+This setup allows you to run Boxed in a production environment with minimal effort. You can find the Terraform configuration in the `aws` directory of the repository, and the [AWS Deployment Guide](docs/aws-deployment.md) provides detailed instructions on how to set up and deploy Boxed on AWS.
 
 ### Ansible Playbooks
 
