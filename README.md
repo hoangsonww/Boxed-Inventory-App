@@ -85,6 +85,10 @@ All these features are designed to make the lives of movers, families, and espec
 
 Boxed is built with a focus on **simplicity**, **usability**, and **AI-powered assistance** to help you find and pack your items efficiently.
 
+### Live Demo
+
+You can try out Boxed live at **[boxed-app.vercel.app](https://boxed-app.vercel.app).** Feel free to create an account and explore the features! 🚀
+
 ## ✨ Core Features
 
 Boxed provides a comprehensive set of features to manage your home inventory and packing needs:

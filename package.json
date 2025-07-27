@@ -11,9 +11,19 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,scss,md,html}\"",
     "check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,scss,md,html}\""
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "inventory-tracker",
+    "smart-home",
+    "packing-assistant",
+    "retrieval-assistant",
+    "ai-powered",
+    "box-management",
+    "item-tracking",
+    "location-management",
+    "quantity-tracking"
+  ],
+  "author": "Son Nguyen",
+  "license": "MIT",
   "dependencies": {
     "prettier": "^3.6.2"
   }

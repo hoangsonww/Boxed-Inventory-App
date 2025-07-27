@@ -1,4 +1,3 @@
-// pages/_document.tsx
 import Document, { Html, Head, Main, NextScript } from "next/document";
 
 export default class MyDocument extends Document {
@@ -17,7 +16,6 @@ export default class MyDocument extends Document {
 
           {/* PWA Manifest */}
           <link rel="manifest" href="/manifest.json" />
-          <meta name="theme-color" content="#ffffff" />
 
           {/* Favicons */}
           <link
@@ -74,8 +72,8 @@ export default class MyDocument extends Document {
           <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
         </Head>
         <body className="bg-neutral-50 text-neutral-900">
-        <Main />
-        <NextScript />
+          <Main />
+          <NextScript />
         </body>
       </Html>
     );

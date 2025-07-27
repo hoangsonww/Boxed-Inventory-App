@@ -6,22 +6,28 @@ import "@/styles/globals.css";
 import Layout from "@/components/Layout";
 import { Toaster } from "sonner";
 import DraggableChatbot from "@/components/DraggableChatbot";
+import MetaUpdater from "@/components/MetaUpdater";
+import { Analytics } from "@vercel/analytics/next"
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [initialSession] = useState(pageProps.initialSession);
 
   return (
-    <SessionContextProvider
-      supabaseClient={supabase}
-      initialSession={initialSession}
-    >
-      <Layout>
-        <Component {...pageProps} />
-        {/* Sonner toasts */}
-        <Toaster position="bottom-right" richColors />
-        {/* Draggable AI Chatbot */}
-        <DraggableChatbot />
-      </Layout>
-    </SessionContextProvider>
+    <>
+      {/* Injects & keeps <meta name="theme-color"> in sync */}
+      <MetaUpdater />
+
+      <SessionContextProvider
+        supabaseClient={supabase}
+        initialSession={initialSession}
+      >
+        <Analytics />
+        <Layout>
+          <Component {...pageProps} />
+          <Toaster position="bottom-right" richColors />
+          <DraggableChatbot />
+        </Layout>
+      </SessionContextProvider>
+    </>
   );
 }

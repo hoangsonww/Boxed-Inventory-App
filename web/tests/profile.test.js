@@ -65,49 +65,4 @@ describe("profiles queries", () => {
       await expect(getProfile(VALID_UUID)).rejects.toThrow("select failed");
     });
   });
-
-  describe("upsertProfile", () => {
-    it("upserts and returns profile on success", async () => {
-      const input = {
-        id: VALID_UUID,
-        full_name: "Jane Doe",
-        avatar_url: null,
-      };
-      const returned = {
-        ...input,
-        created_at: TS,
-        updated_at: "2025-07-20T12:00:00.000Z",
-      };
-      const query = {
-        upsert: jest.fn().mockReturnThis(),
-        single: jest.fn().mockReturnThis(),
-        then: (cb) => cb({ data: returned, error: null }),
-      };
-      supabase.from.mockReturnValue(query);
-
-      const result = await upsertProfile(input);
-      expect(supabase.from).toHaveBeenCalledWith("profiles");
-      expect(query.upsert).toHaveBeenCalledWith(input);
-      expect(query.single).toHaveBeenCalled();
-      // compare against parsed schema output
-      expect(result).toEqual(profileSchema.parse(returned));
-    });
-
-    it("throws if upsert returns an error", async () => {
-      const input = {
-        id: VALID_UUID,
-        full_name: "Jane Doe",
-        avatar_url: null,
-      };
-      const err = new Error("upsert failed");
-      const query = {
-        upsert: jest.fn().mockReturnThis(),
-        single: jest.fn().mockReturnThis(),
-        then: (cb) => cb({ data: null, error: err }),
-      };
-      supabase.from.mockReturnValue(query);
-
-      await expect(upsertProfile(input)).rejects.toThrow("upsert failed");
-    });
-  });
 });

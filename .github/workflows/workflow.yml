@@ -19,21 +19,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node ${{ env.NODE_VERSION }}
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - name: Install web dependencies
+          cache: 'npm'
+
+      - name: Install & run formatter/linter (from repo root)
         run: |
-          cd web
           npm ci --legacy-peer-deps
-      - name: Run formatter
-        run: |
-          cd web
           npm run format
-      - name: Run linter
-        run: |
-          cd web
           npm run lint
 
   # ────────────────────────────────────────────────────────────────
@@ -94,22 +90,28 @@ jobs:
   # ────────────────────────────────────────────────────────────────
   testing:
     name: "🧪 Unit & E2E Tests"
-    needs: [security-scan]
+    needs: [ security-scan ]
     strategy:
       matrix:
-        node: [18, 20]
+        node: [ 18, 20 ]
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
     defaults:
       run:
         working-directory: web
     steps:
       - uses: actions/checkout@v4
+
       - name: Use Node ${{ matrix.node }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
+
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
+
       - name: Run tests
         run: npm test
 
@@ -118,26 +120,29 @@ jobs:
   # ────────────────────────────────────────────────────────────────
   build:
     name: "🏗 Build Next.js (web/)"
-    needs: [testing]
+    needs: [ testing ]
     runs-on: ubuntu-latest
     env:
-      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      # dummy values so Supabase client won’t error
+      SUPABASE_URL: "http://localhost"
+      SUPABASE_ANON_KEY: "dummy"
+      NEXT_PUBLIC_SUPABASE_URL: "http://localhost"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy"
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install dependencies
+      - name: Remove root lockfile so Next.js picks the web lockfile
+        run: rm -f package-lock.json
+
+      - name: Install & build web
         run: |
           cd web
           npm ci --legacy-peer-deps
-
-      - name: Build Next.js app
-        run: |
-          cd web
           npm run build
 
       - name: Upload build artifacts
@@ -147,39 +152,37 @@ jobs:
           path: |
             web/.next/**
             web/public/**
-            web/next.config.js
+            web/next.config.ts
 
   # ────────────────────────────────────────────────────────────────
   #  🐳 4. Build & Push Docker Image                               #
   # ────────────────────────────────────────────────────────────────
   docker:
-    name: "🐳 Build & Push Docker Image"
-    needs: [build]
+    name: "🐳 Build & Push Docker Images"
     runs-on: ubuntu-latest
+    needs: [build]
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v4
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build & push boxed image
+
+      - name: Build & push Boxed image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile
+          context: web
+          file: web/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/boxed:${{ github.sha }}
-            ghcr.io/${{ github.repository_owner }}/boxed:latest
-          build-args: |
-            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-            NODE_ENV=production
+            ghcr.io/hoangsonww/boxed:${{ github.sha }}
+            ghcr.io/hoangsonww/boxed:latest
 
   # ────────────────────────────────────────────────────────────────
   #  🔍 5. Image Vulnerability Scan                                #
