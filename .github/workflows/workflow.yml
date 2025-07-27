@@ -90,22 +90,28 @@ jobs:
   # ────────────────────────────────────────────────────────────────
   testing:
     name: "🧪 Unit & E2E Tests"
-    needs: [security-scan]
+    needs: [ security-scan ]
     strategy:
       matrix:
-        node: [18, 20]
+        node: [ 18, 20 ]
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
     defaults:
       run:
         working-directory: web
     steps:
       - uses: actions/checkout@v4
+
       - name: Use Node ${{ matrix.node }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
+
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
+
       - name: Run tests
         run: npm test
 
