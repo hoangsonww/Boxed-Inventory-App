@@ -331,8 +331,8 @@ This approach ensures that the AI assistant has a clear understanding of the use
 To get started with Boxed, follow these simple steps:
 
 ```bash
-git clone https://github.com/your-user/boxed.git
-cd boxed
+git clone https://github.com/hoangsonww/Boxed-Inventory-App.git
+cd Boxed-Inventory-App
 
 # 1. Install deps
 npm install
@@ -525,6 +525,10 @@ To ensure code quality and reliability, Boxed uses GitHub Actions for continuous
 - and more...
 
 You can find the GitHub Actions workflow files in the `.github/workflows` directory. These workflows are triggered on every push and pull request, ensuring that your code is always tested and ready for deployment.
+
+<p align="center">
+  <img src="docs/gh.png" alt="GitHub Actions Workflow" width="100%" style="border-radius:12px" />
+</p>
 
 ## 🎸 Makefile & Shell Scripts
 
