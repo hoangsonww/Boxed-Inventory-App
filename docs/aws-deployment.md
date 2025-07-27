@@ -34,7 +34,7 @@ This document shows how to provision your **Boxed** infrastructure on AWS with T
 │   ├── main.tf
 │   ├── outputs.tf
 
-````
+```
 
 ---
 
@@ -46,7 +46,7 @@ This document shows how to provision your **Boxed** infrastructure on AWS with T
 provider "aws" {
   region = var.aws_region
 }
-````
+```
 
 ### 1.2 variables.tf
 
@@ -63,13 +63,13 @@ variable "app_image_tag"    { default = "latest" }
 
 Defines:
 
-* VPC, subnets, SGs
-* RDS PostgreSQL
-* ECR repository
-* ECS cluster & service
-* ALB with DNS
+- VPC, subnets, SGs
+- RDS PostgreSQL
+- ECR repository
+- ECS cluster & service
+- ALB with DNS
 
-*(See `aws/main.tf` for full HCL.)*
+_(See `aws/main.tf` for full HCL.)_
 
 ### 1.4 outputs.tf
 
