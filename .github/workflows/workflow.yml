@@ -19,21 +19,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node ${{ env.NODE_VERSION }}
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - name: Install web dependencies
+          cache: 'npm'
+
+      - name: Install & run formatter/linter (from repo root)
         run: |
-          cd web
           npm ci --legacy-peer-deps
-      - name: Run formatter
-        run: |
-          cd web
           npm run format
-      - name: Run linter
-        run: |
-          cd web
           npm run lint
 
   # ────────────────────────────────────────────────────────────────
