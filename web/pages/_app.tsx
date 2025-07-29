@@ -7,7 +7,7 @@ import Layout from "@/components/Layout";
 import { Toaster } from "sonner";
 import DraggableChatbot from "@/components/DraggableChatbot";
 import MetaUpdater from "@/components/MetaUpdater";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [initialSession] = useState(pageProps.initialSession);
