@@ -89,7 +89,7 @@ export default function Navbar() {
                   size="sm"
                   className="hover:bg-secondary/80"
                 >
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
+                  <LayoutDashboard className="h-4 w-4" />
                   Dashboard
                 </Button>
               </Link>
@@ -104,13 +104,13 @@ export default function Navbar() {
                     }}
                     className="font-semibold text-destructive focus:text-destructive"
                   >
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <LogOut className="h-4 w-4" />
                     Log out
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link href="/profile" className="flex items-center">
-                      <Settings className="mr-2 h-4 w-4" />
+                      <Settings className="h-4 w-4" />
                       Profile
                     </Link>
                   </DropdownMenuItem>
@@ -120,7 +120,7 @@ export default function Navbar() {
           ) : (
             <Link href="/login">
               <Button size="sm">
-                <LogIn size={16} className="mr-2" />
+                <LogIn size={16} />
                 Sign in
               </Button>
             </Link>
@@ -148,14 +148,14 @@ export default function Navbar() {
                 <>
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard" className="flex items-center">
-                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <LayoutDashboard className="h-4 w-4" />
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
 
                   <DropdownMenuItem asChild>
                     <Link href="/profile" className="flex items-center">
-                      <Settings className="mr-2 h-4 w-4" />
+                      <Settings className="h-4 w-4" />
                       Profile
                     </Link>
                   </DropdownMenuItem>
@@ -169,14 +169,14 @@ export default function Navbar() {
                     }}
                     className="font-semibold text-destructive focus:text-destructive"
                   >
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <LogOut className="h-4 w-4" />
                     Log out
                   </DropdownMenuItem>
                 </>
               ) : (
                 <DropdownMenuItem asChild>
                   <Link href="/login" className="flex items-center">
-                    <LogIn className="mr-2 h-4 w-4" />
+                    <LogIn className="h-4 w-4" />
                     Sign in
                   </Link>
                 </DropdownMenuItem>
