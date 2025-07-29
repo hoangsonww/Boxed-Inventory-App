@@ -206,16 +206,15 @@ export default function Landing() {
 
           {/* Content */}
           <div className="relative z-10 overflow-hidden rounded-[inherit] bg-background/80 px-6 py-32 text-center backdrop-blur-md">
-            <h1 className="mx-auto max-w-5xl text-5xl font-extrabold leading-tight tracking-tight md:text-6xl lg:text-7xl">
-              Turn&nbsp;
-              <span className="text-primary">{rotatingA[idx]}</span>
-              &nbsp;into&nbsp;
+            <h1 className="mx-auto max-w-xl text-4xl font-extrabold leading-tight tracking-tight sm:max-w-2xl sm:text-5xl md:text-6xl lg:text-7xl">
+              Turn <span className="text-primary">{rotatingA[idx]}</span> into{" "}
               <span className="text-primary">{rotatingB[idx]}</span>
-              &nbsp;with Boxed
+              <br />
+              with Boxed
             </h1>
 
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-              Know what’s in every box, drawer or storage unit - without lifting
+            <p className="mx-auto mt-6 max-w-lg text-base sm:text-lg text-muted-foreground">
+              Know what’s in every box, drawer or storage unit – without lifting
               a lid.
             </p>
 
@@ -223,7 +222,7 @@ export default function Landing() {
               <Link href="/register">
                 <Button
                   size="lg"
-                  className="group transition hover:-translate-y-[2px] hover:shadow-lg"
+                  className="group transition hover:-translate-y-0.5 hover:shadow-lg"
                 >
                   Get started
                   <ArrowRight
@@ -236,7 +235,7 @@ export default function Landing() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="transition hover:-translate-y-[2px]"
+                  className="transition hover:-translate-y-0.5"
                 >
                   Learn More
                 </Button>
