@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { toast } from "sonner";
 import {
@@ -86,15 +87,365 @@ type InventoryInsights = {
 
 const LOW_STOCK_THRESHOLD = 2;
 const STALE_DAYS = 180;
+const PREVIEW_SECRET = process.env.NEXT_PUBLIC_INSIGHTS_PREVIEW_SECRET;
+
+const previewDataset: BoxWithItems[] = [
+  {
+    box: {
+      id: "11111111-1111-1111-1111-111111111111",
+      owner_profile_id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      name: "Kitchen Essentials",
+      location: "Kitchen",
+      status: "packed",
+      photo_url: null,
+      created_at: "2024-01-01T00:00:00.000Z",
+      updated_at: "2024-01-08T00:00:00.000Z",
+    },
+    items: [
+      {
+        id: "20000000-0000-0000-0000-000000000001",
+        box_id: "11111111-1111-1111-1111-111111111111",
+        type_id: null,
+        name: "Stainless Steel Pan",
+        quantity: 3,
+        photo_url: null,
+        last_used: "2024-05-12T00:00:00.000Z",
+        condition: "Excellent",
+        value: 120,
+        created_at: "2024-01-01T00:00:00.000Z",
+        updated_at: "2024-05-12T00:00:00.000Z",
+      },
+      {
+        id: "20000000-0000-0000-0000-000000000002",
+        box_id: "11111111-1111-1111-1111-111111111111",
+        type_id: null,
+        name: "Chef Knife",
+        quantity: 1,
+        photo_url: null,
+        last_used: "2024-04-28T00:00:00.000Z",
+        condition: "Good",
+        value: 95,
+        created_at: "2024-01-01T00:00:00.000Z",
+        updated_at: "2024-04-28T00:00:00.000Z",
+      },
+      {
+        id: "20000000-0000-0000-0000-000000000003",
+        box_id: "11111111-1111-1111-1111-111111111111",
+        type_id: null,
+        name: "Coffee Maker",
+        quantity: 1,
+        photo_url: null,
+        last_used: "2024-02-03T00:00:00.000Z",
+        condition: "Like new",
+        value: 180,
+        created_at: "2024-01-01T00:00:00.000Z",
+        updated_at: "2024-02-03T00:00:00.000Z",
+      },
+      {
+        id: "20000000-0000-0000-0000-000000000004",
+        box_id: "11111111-1111-1111-1111-111111111111",
+        type_id: null,
+        name: "Measuring Cups",
+        quantity: 5,
+        photo_url: null,
+        last_used: "2024-06-01T00:00:00.000Z",
+        condition: "Good",
+        value: 25,
+        created_at: "2024-01-01T00:00:00.000Z",
+        updated_at: "2024-06-01T00:00:00.000Z",
+      },
+    ],
+  },
+  {
+    box: {
+      id: "22222222-2222-2222-2222-222222222222",
+      owner_profile_id: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      name: "Workshop Tools",
+      location: "Garage",
+      status: "unpacked",
+      photo_url: null,
+      created_at: "2024-01-02T00:00:00.000Z",
+      updated_at: "2024-03-18T00:00:00.000Z",
+    },
+    items: [
+      {
+        id: "20000000-0000-0000-0000-000000000005",
+        box_id: "22222222-2222-2222-2222-222222222222",
+        type_id: null,
+        name: "Cordless Drill",
+        quantity: 2,
+        photo_url: null,
+        last_used: "2024-07-01T00:00:00.000Z",
+        condition: "Excellent",
+        value: 160,
+        created_at: "2024-01-02T00:00:00.000Z",
+        updated_at: "2024-07-01T00:00:00.000Z",
+      },
+      {
+        id: "20000000-0000-0000-0000-000000000006",
+        box_id: "22222222-2222-2222-2222-222222222222",
+        type_id: null,
+        name: "Precision Screwdriver Set",
+        quantity: 4,
+        photo_url: null,
+        last_used: "2024-03-01T00:00:00.000Z",
+        condition: "Good",
+        value: 60,
+        created_at: "2024-01-02T00:00:00.000Z",
+        updated_at: "2024-03-01T00:00:00.000Z",
+      },
+      {
+        id: "20000000-0000-0000-0000-000000000007",
+        box_id: "22222222-2222-2222-2222-222222222222",
+        type_id: null,
+        name: "Shop Towels",
+        quantity: 1,
+        photo_url: null,
+        last_used: "2023-09-12T00:00:00.000Z",
+        condition: "Fair",
+        value: 18,
+        created_at: "2024-01-02T00:00:00.000Z",
+        updated_at: "2023-09-12T00:00:00.000Z",
+      },
+      {
+        id: "20000000-0000-0000-0000-000000000008",
+        box_id: "22222222-2222-2222-2222-222222222222",
+        type_id: null,
+        name: "Safety Goggles",
+        quantity: 3,
+        photo_url: null,
+        last_used: "2024-06-15T00:00:00.000Z",
+        condition: "Excellent",
+        value: 45,
+        created_at: "2024-01-02T00:00:00.000Z",
+        updated_at: "2024-06-15T00:00:00.000Z",
+      },
+    ],
+  },
+  {
+    box: {
+      id: "33333333-3333-3333-3333-333333333333",
+      owner_profile_id: "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      name: "Seasonal Décor",
+      location: "Storage Unit",
+      status: "in_transit",
+      photo_url: null,
+      created_at: "2024-01-03T00:00:00.000Z",
+      updated_at: "2024-08-01T00:00:00.000Z",
+    },
+    items: [
+      {
+        id: "20000000-0000-0000-0000-000000000009",
+        box_id: "33333333-3333-3333-3333-333333333333",
+        type_id: null,
+        name: "String Lights",
+        quantity: 6,
+        photo_url: null,
+        last_used: "2023-12-26T00:00:00.000Z",
+        condition: "Good",
+        value: 90,
+        created_at: "2024-01-03T00:00:00.000Z",
+        updated_at: "2023-12-26T00:00:00.000Z",
+      },
+      {
+        id: "20000000-0000-0000-0000-000000000010",
+        box_id: "33333333-3333-3333-3333-333333333333",
+        type_id: null,
+        name: "Ceramic Ornaments",
+        quantity: 2,
+        photo_url: null,
+        last_used: "2023-12-20T00:00:00.000Z",
+        condition: "Fragile",
+        value: 240,
+        created_at: "2024-01-03T00:00:00.000Z",
+        updated_at: "2023-12-20T00:00:00.000Z",
+      },
+      {
+        id: "20000000-0000-0000-0000-000000000011",
+        box_id: "33333333-3333-3333-3333-333333333333",
+        type_id: null,
+        name: "Decor Storage Bins",
+        quantity: 2,
+        photo_url: null,
+        last_used: "2023-01-15T00:00:00.000Z",
+        condition: "Good",
+        value: 70,
+        created_at: "2024-01-03T00:00:00.000Z",
+        updated_at: "2023-01-15T00:00:00.000Z",
+      },
+      {
+        id: "20000000-0000-0000-0000-000000000012",
+        box_id: "33333333-3333-3333-3333-333333333333",
+        type_id: null,
+        name: "Wrapping Paper",
+        quantity: 8,
+        photo_url: null,
+        last_used: "2024-01-05T00:00:00.000Z",
+        condition: "Excellent",
+        value: 32,
+        created_at: "2024-01-03T00:00:00.000Z",
+        updated_at: "2024-01-05T00:00:00.000Z",
+      },
+    ],
+  },
+];
+
+function computeInsights(boxesWithItems: BoxWithItems[]): InventoryInsights {
+  const allItems = boxesWithItems.flatMap((entry) => entry.items);
+  const totalBoxes = boxesWithItems.length;
+  const totalItems = allItems.length;
+  const totalQuantity = allItems.reduce((acc, item) => acc + (item.quantity ?? 0), 0);
+  const totalValue = allItems.reduce((acc, item) => acc + (item.value ?? 0), 0);
+
+  const statuses = (Object.keys(statusLabels) as Array<BoxType["status"]>)
+    .map((status) => {
+      const count = boxesWithItems.filter((entry) => entry.box.status === status).length;
+      const percentage = totalBoxes ? Math.round((count / totalBoxes) * 100) : 0;
+      return { status, count, percentage };
+    })
+    .filter((entry) => entry.count > 0)
+    .sort((a, b) => b.count - a.count);
+
+  const locationAggregates = new Map<
+    string,
+    { boxIds: Set<string>; items: number; quantity: number }
+  >();
+  boxesWithItems.forEach(({ box, items }) => {
+    const key = box.location?.trim() || "Unassigned";
+    if (!locationAggregates.has(key)) {
+      locationAggregates.set(key, {
+        boxIds: new Set<string>(),
+        items: 0,
+        quantity: 0,
+      });
+    }
+    const current = locationAggregates.get(key)!;
+    current.boxIds.add(box.id);
+    current.items += items.length;
+    current.quantity += items.reduce((acc, item) => acc + (item.quantity ?? 0), 0);
+  });
+  const locationBreakdown = Array.from(locationAggregates.entries())
+    .map(([location, data]) => ({
+      location,
+      boxes: data.boxIds.size,
+      items: data.items,
+      quantity: data.quantity,
+    }))
+    .sort((a, b) => b.quantity - a.quantity);
+
+  const conditionAggregates = new Map<string, number>();
+  allItems.forEach((item) => {
+    const key = item.condition?.trim() || "Unspecified";
+    conditionAggregates.set(key, (conditionAggregates.get(key) ?? 0) + 1);
+  });
+  const conditionBreakdown = Array.from(conditionAggregates.entries())
+    .map(([condition, count]) => ({
+      condition,
+      count,
+      percentage: totalItems ? Math.round((count / totalItems) * 100) : 0,
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  const lowStock = allItems
+    .filter((item) => (item.quantity ?? 0) <= LOW_STOCK_THRESHOLD)
+    .sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0))
+    .slice(0, 12)
+    .map((item) => ({
+      item,
+      box: boxesWithItems.find((entry) => entry.box.id === item.box_id)?.box,
+    }));
+
+  const valuableItems = allItems
+    .filter((item) => typeof item.value === "number" && item.value > 0)
+    .sort((a, b) => (b.value ?? 0) - (a.value ?? 0))
+    .slice(0, 8)
+    .map((item) => ({
+      item,
+      box: boxesWithItems.find((entry) => entry.box.id === item.box_id)?.box,
+    }));
+
+  const now = Date.now();
+  const staleItems = allItems
+    .map((item) => {
+      if (!item.last_used) return null;
+      const lastUsed = new Date(item.last_used);
+      if (Number.isNaN(lastUsed.getTime())) return null;
+      const daysSince = Math.floor((now - lastUsed.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysSince < STALE_DAYS) return null;
+      return {
+        item,
+        box: boxesWithItems.find((entry) => entry.box.id === item.box_id)?.box,
+        daysSince,
+      };
+    })
+    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+    .sort((a, b) => b.daysSince - a.daysSince)
+    .slice(0, 8);
+
+  const boxSummaries = boxesWithItems.map(({ box, items }) => {
+    const quantity = items.reduce((acc, item) => acc + (item.quantity ?? 0), 0);
+    const value = items.reduce((acc, item) => acc + (item.value ?? 0), 0);
+    return { box, items: items.length, quantity, value };
+  });
+
+  const highestQuantity = boxSummaries.slice().sort((a, b) => b.quantity - a.quantity)[0];
+  const highestValue = boxSummaries.slice().sort((a, b) => b.value - a.value)[0];
+
+  return {
+    totals: {
+      boxes: totalBoxes,
+      items: totalItems,
+      quantity: totalQuantity,
+      avgPerBox: totalBoxes ? totalQuantity / totalBoxes : 0,
+      totalValue,
+    },
+    statuses,
+    locationBreakdown,
+    conditionBreakdown,
+    lowStock,
+    valuableItems,
+    staleItems,
+    highlights: {
+      highestQuantity,
+      highestValue,
+    },
+  };
+}
 
 export default function InsightsPage() {
   const { session, isLoading: authLoading } = useSessionContext();
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [insights, setInsights] = useState<InventoryInsights | null>(null);
 
+  const previewEnabled = useMemo(() => {
+    if (!PREVIEW_SECRET || !router.isReady) return false;
+    const previewParam = router.query.preview;
+    if (Array.isArray(previewParam)) {
+      return previewParam.includes(PREVIEW_SECRET);
+    }
+    return previewParam === PREVIEW_SECRET;
+  }, [router.isReady, router.query.preview]);
+
+  const previewInsights = useMemo(
+    () => (previewEnabled ? computeInsights(previewDataset) : null),
+    [previewEnabled],
+  );
+
   useEffect(() => {
     if (authLoading) return;
-    if (!session?.user?.id) return;
+
+    if (previewInsights) {
+      setInsights(previewInsights);
+      setLoading(false);
+      return;
+    }
+
+    if (!session?.user?.id) {
+      setInsights(null);
+      setLoading(false);
+      return;
+    }
 
     const loadInsights = async () => {
       try {
@@ -107,153 +458,7 @@ export default function InsightsPage() {
           })),
         );
 
-        const allItems = boxesWithItems.flatMap((entry) => entry.items);
-        const totalBoxes = boxesWithItems.length;
-        const totalItems = allItems.length;
-        const totalQuantity = allItems.reduce(
-          (acc, item) => acc + (item.quantity ?? 0),
-          0,
-        );
-        const totalValue = allItems.reduce(
-          (acc, item) => acc + (item.value ?? 0),
-          0,
-        );
-
-        const statuses = (Object.keys(statusLabels) as Array<BoxType["status"]>)
-          .map((status) => {
-            const count = boxesWithItems.filter(
-              (entry) => entry.box.status === status,
-            ).length;
-            const percentage = totalBoxes
-              ? Math.round((count / totalBoxes) * 100)
-              : 0;
-            return { status, count, percentage };
-          })
-          .filter((entry) => entry.count > 0)
-          .sort((a, b) => b.count - a.count);
-
-        const locationAggregates = new Map<
-          string,
-          { boxIds: Set<string>; items: number; quantity: number }
-        >();
-        boxesWithItems.forEach(({ box, items }) => {
-          const key = box.location?.trim() || "Unassigned";
-          if (!locationAggregates.has(key)) {
-            locationAggregates.set(key, {
-              boxIds: new Set<string>(),
-              items: 0,
-              quantity: 0,
-            });
-          }
-          const current = locationAggregates.get(key)!;
-          current.boxIds.add(box.id);
-          current.items += items.length;
-          current.quantity += items.reduce(
-            (acc, item) => acc + (item.quantity ?? 0),
-            0,
-          );
-        });
-        const locationBreakdown = Array.from(locationAggregates.entries())
-          .map(([location, data]) => ({
-            location,
-            boxes: data.boxIds.size,
-            items: data.items,
-            quantity: data.quantity,
-          }))
-          .sort((a, b) => b.quantity - a.quantity);
-
-        const conditionAggregates = new Map<string, number>();
-        allItems.forEach((item) => {
-          const key = item.condition?.trim() || "Unspecified";
-          conditionAggregates.set(
-            key,
-            (conditionAggregates.get(key) ?? 0) + 1,
-          );
-        });
-        const conditionBreakdown = Array.from(conditionAggregates.entries())
-          .map(([condition, count]) => ({
-            condition,
-            count,
-            percentage: totalItems ? Math.round((count / totalItems) * 100) : 0,
-          }))
-          .sort((a, b) => b.count - a.count);
-
-        const lowStock = allItems
-          .filter((item) => (item.quantity ?? 0) <= LOW_STOCK_THRESHOLD)
-          .sort((a, b) => (a.quantity ?? 0) - (b.quantity ?? 0))
-          .slice(0, 12)
-          .map((item) => ({
-            item,
-            box: boxesWithItems.find((entry) => entry.box.id === item.box_id)?.box,
-          }));
-
-        const valuableItems = allItems
-          .filter((item) => typeof item.value === "number" && item.value > 0)
-          .sort((a, b) => (b.value ?? 0) - (a.value ?? 0))
-          .slice(0, 8)
-          .map((item) => ({
-            item,
-            box: boxesWithItems.find((entry) => entry.box.id === item.box_id)?.box,
-          }));
-
-        const now = Date.now();
-        const staleItems = allItems
-          .map((item) => {
-            if (!item.last_used) return null;
-            const lastUsed = new Date(item.last_used);
-            if (Number.isNaN(lastUsed.getTime())) return null;
-            const daysSince = Math.floor(
-              (now - lastUsed.getTime()) / (1000 * 60 * 60 * 24),
-            );
-            if (daysSince < STALE_DAYS) return null;
-            return {
-              item,
-              box: boxesWithItems.find((entry) => entry.box.id === item.box_id)?.box,
-              daysSince,
-            };
-          })
-          .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
-          .sort((a, b) => b.daysSince - a.daysSince)
-          .slice(0, 8);
-
-        const boxSummaries = boxesWithItems.map(({ box, items }) => {
-          const quantity = items.reduce(
-            (acc, item) => acc + (item.quantity ?? 0),
-            0,
-          );
-          const value = items.reduce(
-            (acc, item) => acc + (item.value ?? 0),
-            0,
-          );
-          return { box, items: items.length, quantity, value };
-        });
-
-        const highestQuantity = boxSummaries
-          .slice()
-          .sort((a, b) => b.quantity - a.quantity)[0];
-        const highestValue = boxSummaries
-          .slice()
-          .sort((a, b) => b.value - a.value)[0];
-
-        setInsights({
-          totals: {
-            boxes: totalBoxes,
-            items: totalItems,
-            quantity: totalQuantity,
-            avgPerBox: totalBoxes ? totalQuantity / totalBoxes : 0,
-            totalValue,
-          },
-          statuses,
-          locationBreakdown,
-          conditionBreakdown,
-          lowStock,
-          valuableItems,
-          staleItems,
-          highlights: {
-            highestQuantity,
-            highestValue,
-          },
-        });
+        setInsights(computeInsights(boxesWithItems));
       } catch (error) {
         console.error(error);
         toast.error("Unable to load inventory insights right now.");
@@ -264,7 +469,7 @@ export default function InsightsPage() {
     };
 
     void loadInsights();
-  }, [authLoading, session]);
+  }, [authLoading, previewInsights, session?.user?.id]);
 
   const locationTotalQuantity = useMemo(() => {
     return insights?.locationBreakdown.reduce(
@@ -273,7 +478,7 @@ export default function InsightsPage() {
     );
   }, [insights]);
 
-  if (!session) {
+  if (!session && !previewEnabled) {
     return (
       <div className="container mx-auto px-6 py-12 text-center text-muted-foreground">
         Please sign in to view insights.
@@ -317,6 +522,13 @@ export default function InsightsPage() {
             </Link>
           </div>
         </header>
+
+        {previewEnabled ? (
+          <div className="rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4 text-sm text-primary">
+            Preview mode active. Remove the secret preview token from the URL to
+            return to live insights.
+          </div>
+        ) : null}
 
         {loading ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
