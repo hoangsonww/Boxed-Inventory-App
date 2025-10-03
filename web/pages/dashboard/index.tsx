@@ -34,7 +34,13 @@ import { getItemsByBox } from "@/supabase/queries/items";
 import { searchItems } from "@/supabase/queries/search";
 import { getAccessibleBoxes } from "@/supabase/queries/boxes";
 import type { Box, Item } from "@/supabase/types";
-import { Search, GripVertical, ChevronUp, ChevronDown } from "lucide-react";
+import {
+  Search,
+  GripVertical,
+  ChevronUp,
+  ChevronDown,
+  BarChart3,
+} from "lucide-react";
 import Head from "next/head";
 
 function SortableBoxCard({ id, box }: { id: string; box: Box }) {
@@ -250,6 +256,12 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex gap-2">
+            <Link href="/dashboard/insights">
+              <Button variant="secondary">
+                <BarChart3 className="mr-2 h-4 w-4" />
+                Insights
+              </Button>
+            </Link>
             <Link href="/boxes/new">
               <Button>Add Box</Button>
             </Link>
