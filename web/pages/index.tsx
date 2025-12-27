@@ -214,8 +214,8 @@ export default function Landing() {
             </h1>
 
             <p className="mx-auto mt-6 text-base sm:text-lg text-muted-foreground">
-              Know what’s in every box, drawer or storage unit – all without lifting
-              a lid. Find anything you own in seconds. 🚀
+              Know what’s in every box, drawer or storage unit – all without
+              lifting a lid. Find anything you own in seconds. 🚀
             </p>
 
             <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">

@@ -5,6 +5,98 @@ import {
   GenerationConfig,
 } from "@google/generative-ai";
 
+type GeminiModelListResponse = {
+  models?: Array<{
+    name?: string;
+    displayName?: string;
+    supportedGenerationMethods?: string[];
+  }>;
+};
+
+const MODEL_CACHE_TTL_MS = 10 * 60 * 1000;
+const FALLBACK_GEMINI_MODELS = ["models/gemini-2.5-flash"];
+
+let cachedGeminiModels: string[] | null = null;
+let cachedGeminiModelsAt = 0;
+let inFlightGeminiModels: Promise<string[]> | null = null;
+let geminiModelRotationIndex = 0;
+
+function rotateModels(models: string[]): string[] {
+  if (models.length <= 1) return models;
+  const startIndex = geminiModelRotationIndex % models.length;
+  geminiModelRotationIndex = (startIndex + 1) % models.length;
+  return [...models.slice(startIndex), ...models.slice(0, startIndex)];
+}
+
+function filterGeminiModels(
+  models: GeminiModelListResponse["models"],
+): string[] {
+  const unique = new Set<string>();
+
+  for (const model of models || []) {
+    const name = model.name?.trim();
+    if (!name) continue;
+
+    const lowerName = name.toLowerCase();
+    const lowerDisplay = (model.displayName || "").toLowerCase();
+    const supportsGenerate =
+      model.supportedGenerationMethods?.includes("generateContent");
+
+    if (!lowerName.startsWith("models/gemini")) continue;
+    if (!supportsGenerate) continue;
+    if (lowerName.includes("pro") || lowerDisplay.includes("pro")) continue;
+    if (lowerName.includes("embedding") || lowerDisplay.includes("embedding")) {
+      continue;
+    }
+
+    unique.add(name);
+  }
+
+  return Array.from(unique);
+}
+
+async function fetchGeminiModelNames(apiKey: string): Promise<string[]> {
+  const now = Date.now();
+  if (cachedGeminiModels && now - cachedGeminiModelsAt < MODEL_CACHE_TTL_MS) {
+    return cachedGeminiModels;
+  }
+
+  if (inFlightGeminiModels) return inFlightGeminiModels;
+
+  inFlightGeminiModels = (async () => {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1/models?key=${apiKey}`,
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch Gemini models (status ${response.status})`,
+      );
+    }
+
+    const data = (await response.json()) as GeminiModelListResponse;
+    const models = filterGeminiModels(data.models);
+
+    if (!models.length) {
+      throw new Error("No Gemini models available after filtering");
+    }
+
+    cachedGeminiModels = models;
+    cachedGeminiModelsAt = Date.now();
+    return models;
+  })();
+
+  try {
+    return await inFlightGeminiModels;
+  } catch (error) {
+    console.warn("BoxedAI model list fetch failed:", error);
+    if (cachedGeminiModels?.length) return cachedGeminiModels;
+    return FALLBACK_GEMINI_MODELS;
+  } finally {
+    inFlightGeminiModels = null;
+  }
+}
+
 export async function chatWithBoxAI(
   history: Array<{ role: string; parts: Array<{ text: string }> }>,
   message: string,
@@ -43,10 +135,7 @@ ${context || "No inventory data available."}
 `;
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash-lite",
-    systemInstruction: baseSystem,
-  });
+  const modelNames = rotateModels(await fetchGeminiModelNames(apiKey));
 
   const generationConfig: GenerationConfig = {
     temperature: 0.6,
@@ -86,18 +175,40 @@ ${context || "No inventory data available."}
     { role: "user", parts: [{ text: message }] },
   ];
 
-  const chatSession = model.startChat({
-    generationConfig,
-    safetySettings,
-    history: fullHistory,
-  });
+  let lastError: unknown;
 
-  const result = await chatSession.sendMessage(message);
-  const raw = await result.response?.text?.();
-  if (!raw || typeof raw !== "string") {
-    console.error("BoxedAI invalid response:", result);
-    throw new Error("Empty or invalid response from BoxedAI");
+  for (const modelName of modelNames) {
+    try {
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        systemInstruction: baseSystem,
+      });
+
+      const chatSession = model.startChat({
+        generationConfig,
+        safetySettings,
+        history: fullHistory,
+      });
+
+      const result = await chatSession.sendMessage(message);
+      const raw = await result.response?.text?.();
+      if (!raw || typeof raw !== "string") {
+        throw new Error("Empty or invalid response from BoxedAI");
+      }
+
+      return raw.trim();
+    } catch (error) {
+      lastError = error;
+      console.warn("BoxedAI model attempt failed:", {
+        model: modelName,
+        error,
+      });
+    }
   }
 
-  return raw.trim();
+  console.error("BoxedAI all Gemini models failed:", lastError);
+  if (lastError instanceof Error) {
+    throw lastError;
+  }
+  throw new Error("All Gemini models failed");
 }
