@@ -340,7 +340,7 @@ export default function Chatbot() {
                         className={`max-w-[80%] rounded-lg px-3 py-2 text-sm break-words prose prose-invert dark:prose-invert ${
                           isUser
                             ? "bg-primary text-primary-foreground shadow-sm"
-                            : "bg-muted text-foreground"
+                            : "bg-background/95 text-foreground border border-border/60 shadow-sm"
                         }`}
                       >
                         <ReactMarkdown
