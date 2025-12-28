@@ -99,6 +99,7 @@ function EditableText({
   canEdit,
   className,
   inputClassName,
+  placeholderClassName,
   "aria-label": ariaLabel,
 }: {
   value?: string | null;
@@ -107,8 +108,10 @@ function EditableText({
   canEdit: boolean;
   className?: string;
   inputClassName?: string;
+  placeholderClassName?: string;
   "aria-label"?: string;
 }) {
+  const placeholderClasses = placeholderClassName ?? "text-muted-foreground";
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value ?? "");
   const [saving, setSaving] = useState(false);
@@ -149,7 +152,7 @@ function EditableText({
         {value?.trim() ? (
           value
         ) : (
-          <span className="text-muted-foreground">{placeholder}</span>
+          <span className={placeholderClasses}>{placeholder}</span>
         )}
       </span>
     );
@@ -167,7 +170,7 @@ function EditableText({
           {value?.trim() ? (
             value
           ) : (
-            <span className="text-muted-foreground">{placeholder}</span>
+            <span className={placeholderClasses}>{placeholder}</span>
           )}
         </span>
         <Pencil className="h-3.5 w-3.5 opacity-0 transition group-hover:opacity-100 text-muted-foreground" />
@@ -294,17 +297,21 @@ export function BoxHero({
                 (e.currentTarget as HTMLImageElement).dataset.loaded = "true";
               }}
             />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-slate-900/80 via-slate-800/40 to-transparent" />
           </div>
         ) : (
-          <div className="box-cardboard-bg relative flex h-52 w-full flex-col items-center justify-center gap-2 text-muted-foreground">
+          <div className="box-cardboard-bg relative flex h-52 w-full flex-col items-center justify-center gap-2 text-black">
             <Archive className="h-8 w-8" />
-            <span>No box photo</span>
+            <span className="text-sm font-medium text-black">No box photo</span>
 
             {isOwner && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild className="z-10">
-                  <Button variant="outline" size="sm">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-black/40 text-black"
+                  >
                     <Camera className="mr-1 h-4 w-4" /> Add photo
                   </Button>
                 </DropdownMenuTrigger>
@@ -336,17 +343,26 @@ export function BoxHero({
         {/* Meta overlay */}
         <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-4 p-4">
           <div className="space-y-1">
-            <h1 className="max-w-full truncate text-2xl font-bold drop-shadow-sm">
+            <h1
+              className={`max-w-full truncate text-2xl font-bold drop-shadow-sm ${
+                hasPhoto ? "text-white" : "text-black"
+              }`}
+            >
               <EditableText
                 value={box.name}
                 placeholder="Untitled box"
                 onSave={onRename}
                 canEdit={isOwner}
                 className="align-middle"
+                placeholderClassName={hasPhoto ? "text-white/80" : "text-black"}
                 aria-label="Edit box name"
               />
             </h1>
-            <div className="flex items-center gap-1 text-sm text-muted-foreground drop-shadow-sm">
+            <div
+              className={`flex items-center gap-1 text-sm drop-shadow-sm ${
+                hasPhoto ? "text-white" : "text-black/85"
+              }`}
+            >
               <MapPin className="h-4 w-4 shrink-0" />
               <EditableText
                 value={box.location ?? ""}
@@ -354,10 +370,17 @@ export function BoxHero({
                 onSave={onRelocate}
                 canEdit={isOwner}
                 className="truncate"
+                placeholderClassName={
+                  hasPhoto ? "text-white/70" : "text-black/70"
+                }
                 aria-label="Edit box location"
               />
             </div>
-            <p className="text-xs text-muted-foreground drop-shadow-sm">
+            <p
+              className={`text-xs drop-shadow-sm ${
+                hasPhoto ? "text-white/90" : "text-black"
+              }`}
+            >
               {totalItems} item{totalItems !== 1 ? "s" : ""} · {totalQty} total
             </p>
           </div>
