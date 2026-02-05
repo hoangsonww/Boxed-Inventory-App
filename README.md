@@ -222,12 +222,6 @@ Boxed's user interface is designed to be intuitive and user-friendly, with a foc
   <img src="docs/register.png" alt="Register Page" width="100%" style="border-radius:12px" />
 </p>
 
-### Dark Mode
-
-<p align="center">
-  <img src="docs/dark-mode.png" alt="Dark Mode" width="100%" style="border-radius:12px" />
-</p>
-
 ## 🗄 Data Model
 
 Below is the core data model for Boxed, designed to be simple yet effective for managing boxes, items, and their relationships.
