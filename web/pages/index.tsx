@@ -481,9 +481,22 @@ export default function Landing() {
   }, []);
 
   useEffect(() => {
-    const elements = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-reveal]"),
-    );
+    const root = document.documentElement;
+    root.classList.add("reveal-ready");
+    const container = document.querySelector("main");
+    const elements = container
+      ? Array.from(container.querySelectorAll<HTMLElement>("*")).filter(
+          (el) => {
+            const tag = el.tagName;
+            if (tag === "STYLE" || tag === "SCRIPT" || tag === "NOSCRIPT") {
+              return false;
+            }
+            if (el.hasAttribute("data-reveal-ignore")) return false;
+            if (el.closest("[data-reveal-ignore]")) return false;
+            return true;
+          },
+        )
+      : [];
     if (!elements.length) return;
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -492,6 +505,27 @@ export default function Landing() {
       elements.forEach((el) => el.classList.add("is-visible"));
       return;
     }
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+    const isInView = (el: HTMLElement) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.bottom > 0 &&
+        rect.top < viewportHeight &&
+        rect.right > 0 &&
+        rect.left < viewportWidth
+      );
+    };
+    elements.forEach((el, idx) => {
+      if (!el.dataset.reveal) el.dataset.reveal = "up";
+      if (!el.style.getPropertyValue("--reveal-delay")) {
+        const stagger = (idx % 6) * 40;
+        el.style.setProperty("--reveal-delay", `${stagger}ms`);
+      }
+      if (isInView(el)) {
+        el.classList.add("is-visible");
+      }
+    });
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -502,8 +536,13 @@ export default function Landing() {
       },
       { threshold: 0.2, rootMargin: "0px 0px -10% 0px" },
     );
-    elements.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    elements
+      .filter((el) => !el.classList.contains("is-visible"))
+      .forEach((el) => io.observe(el));
+    return () => {
+      io.disconnect();
+      root.classList.remove("reveal-ready");
+    };
   }, []);
 
   return (
@@ -519,9 +558,18 @@ export default function Landing() {
       <main className="flex flex-col items-center gap-28 pb-36">
         <section className="relative isolate w-full max-w-6xl overflow-hidden rounded-3xl p-[3px] animated-border">
           {/* Animated gradient blobs */}
-          <div className="pointer-events-none absolute -top-48 -left-48 h-96 w-96 rounded-full bg-primary/30 blur-3xl animate-blob" />
-          <div className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-secondary/25 blur-3xl animate-blob delay-150" />
-          <div className="pointer-events-none absolute top-1/2 left-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/20 blur-2xl animate-blob delay-300" />
+          <div
+            data-reveal-ignore
+            className="pointer-events-none absolute -top-48 -left-48 h-96 w-96 rounded-full bg-primary/30 blur-3xl animate-blob"
+          />
+          <div
+            data-reveal-ignore
+            className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-secondary/25 blur-3xl animate-blob delay-150"
+          />
+          <div
+            data-reveal-ignore
+            className="pointer-events-none absolute top-1/2 left-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/20 blur-2xl animate-blob delay-300"
+          />
 
           {/* Content */}
           <div className="relative z-10 flex min-h-[70svh] flex-col justify-center overflow-hidden rounded-[inherit] bg-background/80 px-6 py-16 text-center backdrop-blur-md sm:min-h-[75svh] sm:py-20 md:min-h-[80svh] md:py-24">
@@ -1107,7 +1155,7 @@ export default function Landing() {
           }
 
           /* reveal animations */
-          [data-reveal] {
+          :global(.reveal-ready) [data-reveal] {
             opacity: 0;
             translate: 0 16px;
             scale: 0.98;
@@ -1119,17 +1167,17 @@ export default function Landing() {
               filter 700ms ease;
             transition-delay: var(--reveal-delay, 0ms);
           }
-          [data-reveal="left"] {
+          :global(.reveal-ready) [data-reveal="left"] {
             translate: -16px 12px;
           }
-          [data-reveal="right"] {
+          :global(.reveal-ready) [data-reveal="right"] {
             translate: 16px 12px;
           }
-          [data-reveal="scale"] {
+          :global(.reveal-ready) [data-reveal="scale"] {
             scale: 0.96;
             translate: 0 10px;
           }
-          [data-reveal].is-visible {
+          :global(.reveal-ready) [data-reveal].is-visible {
             opacity: 1;
             translate: 0 0;
             scale: 1;
@@ -1180,7 +1228,7 @@ export default function Landing() {
             .float-slow {
               animation: none;
             }
-            [data-reveal] {
+            :global(.reveal-ready) [data-reveal] {
               opacity: 1;
               translate: none;
               scale: 1;
