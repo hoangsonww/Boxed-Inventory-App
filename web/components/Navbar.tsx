@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   Settings,
   Menu,
+  BarChart3,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -94,6 +95,17 @@ export default function Navbar() {
                 </Button>
               </Link>
 
+              <Link href="/dashboard/insights">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="hover:bg-secondary/60"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  Insights
+                </Button>
+              </Link>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>{avatarEl}</DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-44">
@@ -150,6 +162,13 @@ export default function Navbar() {
                     <Link href="/dashboard" className="flex items-center">
                       <LayoutDashboard className="h-4 w-4" />
                       Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard/insights" className="flex items-center">
+                      <BarChart3 className="h-4 w-4" />
+                      Insights
                     </Link>
                   </DropdownMenuItem>
 
