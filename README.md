@@ -644,3 +644,9 @@ Built with _☕_ + _chaotic moving experiences_ by **Son Nguyen** in 2025.
 **Enjoy never losing track of your stuff again.** 🧳📦🧠
 
 [🔝 Back to Top](#-boxed---your-smart-home-inventory-packing--retrieval-assistant)
+
+## SOLID Refactor Note
+
+- Keep UI handlers thin and move domain logic into focused services.
+- Inject external clients so integrations stay replaceable and easy to test.
+- Validate inputs at boundaries to preserve single-responsibility flows.
