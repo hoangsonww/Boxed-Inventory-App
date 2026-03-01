@@ -31,3 +31,9 @@ infra-apply:
 .PHONY: infra-destroy
 infra-destroy:
 	cd $(TF_DIR) && terraform destroy -auto-approve -var="env=$(ENV)"
+
+.PHONY: show-runtime-info
+show-runtime-info:
+	@echo "Node: $$(node --version 2>/dev/null || echo unavailable)"
+	@echo "npm: $$(npm --version 2>/dev/null || echo unavailable)"
+	@echo "Python: $$(python3 --version 2>/dev/null || python --version 2>/dev/null || echo unavailable)"
